@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class SignUpScrean extends StatelessWidget {
+  const SignUpScrean({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               Center(
-                child: Image.asset('assets/images/Group.png', height: 150),
+                child: Image.asset('assets/images/sign_up.png', height: 150),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ToggleButtons(
-                    isSelected: const [true, false],
+                    isSelected: const [false, true],
                     onPressed: (index) {},
                     children: const [
                       Padding(
@@ -39,17 +39,33 @@ class LoginScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-
               TextFormField(
                 decoration: InputDecoration(
-                  hintText: 'Phone',
+                  prefixIcon: Image.asset('assets/icons/User.png'),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                decoration: InputDecoration(
+                  prefixIcon: Image.asset('assets/icons/Email.png'),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                decoration: InputDecoration(
                   prefixIcon: Image.asset('assets/icons/Iphone.png'),
                 ),
               ),
-
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
               TextFormField(
-                obscureText: true,
+                decoration: InputDecoration(
+                  prefixIcon: Image.asset(
+                    'assets/icons/Financial Institution.png',
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
                     icon: Image.asset('assets/icons/view.png'),
@@ -59,20 +75,18 @@ class LoginScreen extends StatelessWidget {
                   prefixIcon: Image.asset('assets/icons/lock.png'),
                 ),
               ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
+              const SizedBox(height: 10),
+              TextFormField(
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    icon: Image.asset('assets/icons/view.png'),
                     onPressed: () {},
-                    child: Text(
-                      'Forget Password?',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
                   ),
-                ],
+                  hintText: 'Confirm Password',
+                  prefixIcon: Image.asset('assets/icons/lock.png'),
+                ),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
 
               ElevatedButton(
                 onPressed: () {},

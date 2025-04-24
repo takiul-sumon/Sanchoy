@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sanchoy/ui/screans/splash_screan.dart';
+import 'package:sanchoy/ui/screans/SignUpScrean.dart';
 
 class Sanchoy extends StatelessWidget {
   const Sanchoy({super.key});
@@ -28,7 +28,7 @@ class Sanchoy extends StatelessWidget {
           ),
         ),
       ),
-      home: splash_Screan(),
+      home: SignUpScrean(),
     );
   }
 }
