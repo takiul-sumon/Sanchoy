@@ -1,41 +1,5 @@
 import 'package:flutter/material.dart';
 
-// class LoginScrean extends StatelessWidget {
-//   const LoginScrean({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Stack(children: [
-
-//       ], ),
-//     );
-//   }
-// }import 'package:flutter/material.dart';
-
-// class LoginScreen extends StatelessWidget {
-//   const LoginScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SafeArea(
-//         child: SingleChildScrollView(
-//           padding: const EdgeInsets.all(20),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.stretch,
-//             children: [SizedBox(height: 30),
-//             Row(children: [
-//               SizedBox(width: ,)
-//             ],)
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -75,28 +39,24 @@ class LoginScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
+
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Phone',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+                  hintText: 'Phone',
                   prefixIcon: Image.asset('assets/icons/Iphone.png'),
                 ),
               ),
+
               const SizedBox(height: 15),
-              TextField(
+              TextFormField(
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  prefixIcon: Image.asset('assets/icons/lock.png'),
                   suffixIcon: IconButton(
                     icon: Image.asset('assets/icons/view.png'),
                     onPressed: () {},
                   ),
+                  hintText: 'Password',
+                  prefixIcon: Image.asset('assets/icons/lock.png'),
                 ),
               ),
               const SizedBox(height: 5),
@@ -119,17 +79,10 @@ class LoginScreen extends StatelessWidget {
                 child: Text(
                   'Log In',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 13,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.blue,
                 ),
               ),
               const SizedBox(height: 10),
@@ -162,7 +115,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   backgroundColor: Color(0xFFBBD3E8),
                   foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
                 ),
               ),
             ],
