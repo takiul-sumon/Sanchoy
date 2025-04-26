@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sanchoy/ui/screans/SignUpScrean.dart';
+import 'package:sanchoy/ui/screans/forgetPasswordVerificationWithEmail.dart';
+import 'package:sanchoy/ui/screans/splash_screan.dart';
 
 class Sanchoy extends StatelessWidget {
   const Sanchoy({super.key});
@@ -8,6 +10,9 @@ class Sanchoy extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         inputDecorationTheme: InputDecorationTheme(
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.blue, strokeAlign: 5),
@@ -28,7 +33,7 @@ class Sanchoy extends StatelessWidget {
           ),
         ),
       ),
-      home: SignUpScrean(),
+      home: splash_Screan(),
     );
   }
 }

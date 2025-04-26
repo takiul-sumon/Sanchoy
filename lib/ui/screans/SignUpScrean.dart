@@ -123,14 +123,6 @@ class SignUpScrean extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {},
                 child: Image.asset('assets/icons/google.png'),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  backgroundColor: Color(0xFFBBD3E8),
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                ),
               ),
             ],
           ),
