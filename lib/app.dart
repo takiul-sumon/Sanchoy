@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sanchoy/ui/screans/SignUpScrean.dart';
-import 'package:sanchoy/ui/screans/forgetPasswordVerificationWithEmail.dart';
+
 import 'package:sanchoy/ui/screans/splash_screan.dart';
 
 class Sanchoy extends StatelessWidget {

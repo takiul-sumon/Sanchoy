@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sanchoy/ui/screans/Login_screan.dart';
-import 'package:sanchoy/ui/screans/forgetPasswordVerificationWithEmail.dart';
+import 'package:sanchoy/ui/screans/ConfirmationPageResetPassword.dart';
 
 class splash_Screan extends StatefulWidget {
   const splash_Screan({super.key});
@@ -20,9 +19,7 @@ class _splash_ScreanState extends State<splash_Screan> {
     await Future.delayed(Duration(seconds: 2));
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => Forgetpasswordverificationwithemail(),
-      ),
+      MaterialPageRoute(builder: (context) => ConfirmationResetPasswordPage()),
     );
   }
 
