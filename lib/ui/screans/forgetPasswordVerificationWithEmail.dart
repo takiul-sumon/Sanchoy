@@ -42,7 +42,7 @@ class Forgetpasswordverificationwithemail extends StatelessWidget {
               ),
             ),
             Text(
-              'Please enter your phone number and we will \nsend OTP code in the next step to reset your\n                              password',
+              'Please enter your Email and we will send OTP code in \n                       the next step to reset your\n                                    password',
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 20),

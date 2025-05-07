@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 
 import 'package:sanchoy/ui/screans/splash_screan.dart';
 
-class Sanchoy extends StatelessWidget {
+class Sanchoy extends StatefulWidget {
   const Sanchoy({super.key});
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   @override
+  State<Sanchoy> createState() => _SanchoyState();
+}
+
+class _SanchoyState extends State<Sanchoy> {
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      navigatorKey: Sanchoy.navigatorKey,
+
       theme: ThemeData(
         textTheme: TextTheme(
           bodyMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
