@@ -2,8 +2,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sanchoy/ui/controller/Login_controller.dart';
+import 'package:sanchoy/ui/screans/MainButtomNavScreen.dart';
 import 'package:sanchoy/ui/screans/SignUpScrean.dart';
-import 'package:sanchoy/ui/screans/add_curstomer.dart';
 import 'package:sanchoy/ui/screans/forgetPasswordVerificationWithEmail.dart';
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
@@ -206,7 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) {
-            return AddCustomerSupplierPage();
+            return Mainbuttomnavscreen();
           },
         ),
         (predicate) => false,

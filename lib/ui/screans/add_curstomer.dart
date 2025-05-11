@@ -18,6 +18,7 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
   final TextEditingController _nameTEController = TextEditingController();
   final TextEditingController _phoneTEController = TextEditingController();
   final TextEditingController _locationTEController = TextEditingController();
+  final TextEditingController _previousDueTEController = TextEditingController(); // NEW
   final ImagePicker _picker = ImagePicker();
   XFile? _pickedImage;
   DateTime? _selectedDate;
@@ -35,27 +36,28 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
         children: [
           Container(
             height: double.infinity,
-            decoration: BoxDecoration(color: Color(0xff2370B4)),
+            decoration: const BoxDecoration(color: Color(0xff2370B4)),
           ),
           Positioned(
             top: 50,
             child: Row(
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   icon: Image.asset(
                     'assets/icons/Success Icon.png',
                     color: Colors.white,
                   ),
                 ),
-                Text(
+                const Text(
                   'Add Customer/Supplier',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ],
             ),
           ),
-
           Positioned(
             top: 100,
             right: 0,
@@ -63,7 +65,7 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
             child: Container(
               height: 850 - 100,
               decoration: BoxDecoration(
-                color: Color(0xffE9F1F8),
+                color: const Color(0xffE9F1F8),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Column(
@@ -91,7 +93,7 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
 
   Widget _buildForm() {
     return Container(
-      decoration: BoxDecoration(color: Color(0xffE9F1F8)),
+      decoration: const BoxDecoration(color: Color(0xffE9F1F8)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
@@ -136,6 +138,16 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
               controller: _locationTEController,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.streetAddress,
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.money),
+                hintText: 'Previous Due',
+              ),
+              controller: _previousDueTEController,
+              textInputAction: TextInputAction.next,
+              keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
             Row(
@@ -233,15 +245,14 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
       'name': _nameTEController.text.trim(),
       'phone': _phoneTEController.text.trim(),
       'location': _locationTEController.text.trim(),
+      'previous_due':
+          double.tryParse(_previousDueTEController.text.trim()) ?? 0.0,
       'photo': photoUrl,
       'type': type,
       'selected_date':
           _selectedDate != null ? Timestamp.fromDate(_selectedDate!) : null,
     });
 
-    // ScaffoldMessenger.of(
-    //   context,
-    // ).showSnackBar(const SnackBar(content: Text("Entry added successfully")));
     showShackBarMessenger(context, "Entry added successfully", true);
 
     Navigator.of(context).pop();
@@ -249,9 +260,10 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
 
   @override
   void dispose() {
+    _nameTEController.dispose();
+    _phoneTEController.dispose();
+    _locationTEController.dispose();
+    _previousDueTEController.dispose(); // NEW
     super.dispose();
-    _nameTEController.clear();
-    _phoneTEController.clear();
-    _locationTEController.clear();
   }
 }

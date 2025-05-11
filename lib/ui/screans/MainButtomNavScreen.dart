@@ -1,7 +1,51 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class Mainbuttomnavscreen extends StatelessWidget {
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
+import 'package:sanchoy/ui/screans/add_curstomer.dart';
+
+class Mainbuttomnavscreen extends StatefulWidget {
   const Mainbuttomnavscreen({super.key});
+
+  @override
+  State<Mainbuttomnavscreen> createState() => _MainbuttomnavscreenState();
+}
+
+class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
+  List<Showcustomersuppliermodel> showSupplierCustomer = [];
+  bool isLoading = false;
+  final FirebaseFirestore db = FirebaseFirestore.instance;
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final QuerySnapshot snapshot = await db.collection('entries').get();
+
+      for (QueryDocumentSnapshot doc in snapshot.docs) {
+        Showcustomersuppliermodel addSupplierCustomer =
+            Showcustomersuppliermodel.fromJson(
+              doc.id,
+              doc.data() as Map<String, dynamic>,
+            );
+        showSupplierCustomer.add(addSupplierCustomer);
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+
+    setState(() {
+      isLoading = false; // ✅ Correct assignment
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,6 +54,7 @@ class Mainbuttomnavscreen extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: Stack(
+          alignment: Alignment.centerLeft,
           children: [
             Container(
               height: screenHeight,
@@ -61,20 +106,16 @@ class Mainbuttomnavscreen extends StatelessWidget {
               top: 120,
               right: 0,
               left: 0,
-              child: SingleChildScrollView(
-                child: Container(
-                  // height: screenHeight - 150,
-                  // padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Color(0xffE9F1F8),
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    ),
-                  ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xffE9F1F8),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
                   child: Column(
                     children: [
                       Container(
-                        // padding: EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           // color: Colors.white,
                           // borderRadius: BorderRadius.circular(16),
@@ -87,7 +128,11 @@ class Mainbuttomnavscreen extends StatelessWidget {
                                 // Icon(Icons.arrow_downward, color: Colors.red),
                                 Text(
                                   "মোট পাবে",
-                                  style: TextStyle(color: Colors.green),
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
                                 ),
                                 Text(
                                   "৳50.00",
@@ -104,7 +149,11 @@ class Mainbuttomnavscreen extends StatelessWidget {
                                 // Icon(Icons.arrow_upward, color: Colors.green),
                                 Text(
                                   "মোট দেবে",
-                                  style: TextStyle(color: Colors.red),
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
                                 ),
                                 Text(
                                   "৳50.00",
@@ -183,31 +232,45 @@ class Mainbuttomnavscreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        height: 750,
-                        child: ListView.builder(
-                          itemCount: 8,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  "https://i.pravatar.cc/150?img=${index + 1}",
+                        height: MediaQuery.of(context).size.height * .9,
+                        child: Visibility(
+                          visible: isLoading == false,
+                          replacement: CircularProgressIndicator(),
+                          child: ListView.builder(
+                            itemCount: showSupplierCustomer.length,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      _shoidlShowImage(
+                                            showSupplierCustomer[index].photo,
+                                          )
+                                          ? MemoryImage(
+                                            base64Decode(
+                                              showSupplierCustomer[index].photo,
+                                            ),
+                                          )
+                                          : null,
                                 ),
-                              ),
-                              title: Text("আব্দুল্লাহ আল মামুন"),
-                              subtitle: Text("আপডেট: আজ"),
-                              trailing: Text(
-                                index % 2 == 0 ? "৳50.00" : "৳0.00",
-                                style: TextStyle(
-                                  color:
-                                      index % 2 == 0
-                                          ? Colors.green
-                                          : Colors.red,
-                                  fontWeight: FontWeight.bold,
+                                title: Text(showSupplierCustomer[index].name),
+                                subtitle: Text(
+                                  showSupplierCustomer[index].date.toString(),
                                 ),
-                              ),
-                            );
-                          },
+                                trailing: Text(
+                                  "৳${showSupplierCustomer[index].previousDue}.00",
+                                  style: TextStyle(
+                                    color:
+                                        index % 2 == 0
+                                            ? Colors.green
+                                            : Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ],
@@ -224,211 +287,25 @@ class Mainbuttomnavscreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
           ),
           child: IconButton(
-            onPressed: () {},
+            onPressed: onTapAddCustomerSupplier,
             icon: Image.asset('assets/icons/Group.png'),
           ),
         ),
       ),
     );
   }
+
+  onTapAddCustomerSupplier() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return AddCustomerSupplierPage();
+        },
+      ),
+    );
+  }
+
+  bool _shoidlShowImage(String? photo) {
+    return photo != null && photo.isNotEmpty;
+  }
 }
-
-
-
-
-
-
-// import 'package:flutter/material.dart';
-
-// class TeaStallDashboard extends StatelessWidget {
-//   const TeaStallDashboard({super.key});
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: Scaffold(
-//         backgroundColor: Colors.blue,
-//         bottomNavigationBar: BottomNavigationBar(
-//           currentIndex: 0,
-//           selectedItemColor: Colors.blue,
-//           unselectedItemColor: Colors.grey,
-//           items: [
-//             BottomNavigationBarItem(icon: Icon(Icons.home), label: "হোম"),
-//             BottomNavigationBarItem(icon: Icon(Icons.list), label: "লেনদেন"),
-//             BottomNavigationBarItem(
-//               icon: Icon(Icons.person),
-//               label: "প্রোফাইল",
-//             ),
-//           ],
-//         ),
-//         floatingActionButton: FloatingActionButton(
-//           onPressed: () {},
-//           child: Icon(Icons.person_add_alt),
-//           backgroundColor: Colors.blue,
-//         ),
-//         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-//         body: Stack(
-//           children: [
-//             // Top blue section
-//             Container(
-//               height: 170,
-//               color: Colors.blue,
-//               padding: EdgeInsets.only(top: 50, left: 20, right: 20),
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-                      
-//                     ],
-//                   ),
-//                   Row(
-//                     children: [
-//                       Icon(Icons.language, color: Colors.white),
-//                       SizedBox(width: 12),
-//                       Icon(Icons.notifications, color: Colors.white),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-
-//             // White content section
-//             Positioned(
-//               top: 130,
-//               left: 0,
-//               right: 0,
-//               bottom: 0,
-//               child: Container(
-//                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-//                 decoration: BoxDecoration(
-//                   color: Colors.grey[100],
-//                   borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-//                 ),
-//                 child: Column(
-//                   children: [
-//                     // Summary (Due and Pay)
-//                     Container(
-//                       padding: EdgeInsets.symmetric(vertical: 12),
-//                       decoration: BoxDecoration(
-//                         color: Colors.white,
-//                         borderRadius: BorderRadius.circular(16),
-//                       ),
-//                       child: Row(
-//                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                         children: [
-//                           Column(
-//                             children: [
-//                               Icon(Icons.arrow_downward, color: Colors.red),
-//                               Text("মোট পাবে"),
-//                               Text(
-//                                 "৳50.00",
-//                                 style: TextStyle(
-//                                   color: Colors.green,
-//                                   fontWeight: FontWeight.bold,
-//                                 ),
-//                               ),
-//                             ],
-//                           ),
-//                           Container(height: 40, width: 1, color: Colors.grey),
-//                           Column(
-//                             children: [
-//                               Icon(Icons.arrow_upward, color: Colors.green),
-//                               Text("মোট দেবে"),
-//                               Text(
-//                                 "৳50.00",
-//                                 style: TextStyle(
-//                                   color: Colors.red,
-//                                   fontWeight: FontWeight.bold,
-//                                 ),
-//                               ),
-//                             ],
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                     SizedBox(height: 12),
-
-//                     // Search & Filter Row
-//                     Row(
-//                       children: [
-//                         Expanded(
-//                           child: TextField(
-//                             decoration: InputDecoration(
-//                               hintText: "খোঁজ",
-//                               prefixIcon: Icon(Icons.search),
-//                               filled: true,
-//                               fillColor: Colors.white,
-//                               contentPadding: EdgeInsets.symmetric(
-//                                 horizontal: 16,
-//                               ),
-//                               border: OutlineInputBorder(
-//                                 borderRadius: BorderRadius.circular(12),
-//                                 borderSide: BorderSide.none,
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                         SizedBox(width: 8),
-//                         CircleAvatar(
-//                           backgroundColor: Colors.white,
-//                           child: Icon(Icons.filter_list, color: Colors.grey),
-//                         ),
-//                         SizedBox(width: 8),
-//                         CircleAvatar(
-//                           backgroundColor: Colors.white,
-//                           child: Icon(Icons.download, color: Colors.grey),
-//                         ),
-//                       ],
-//                     ),
-//                     SizedBox(height: 12),
-
-//                     // Header Text
-//                     Align(
-//                       alignment: Alignment.centerLeft,
-//                       child: Text(
-//                         "কাস্টমার / সাপ্লায়ার",
-//                         style: TextStyle(color: Colors.red),
-//                       ),
-//                     ),
-//                     SizedBox(height: 8),
-
-//                     // List
-//                     Expanded(
-//                       child: ListView.builder(
-//                         itemCount: 8,
-//                         itemBuilder: (context, index) {
-//                           return Card(
-//                             child: ListTile(
-//                               leading: CircleAvatar(
-//                                 backgroundImage: NetworkImage(
-//                                   "https://i.pravatar.cc/150?img=${index + 1}",
-//                                 ),
-//                               ),
-//                               title: Text("আব্দুল্লাহ আল মামুন"),
-//                               subtitle: Text("আপডেট: আজ"),
-//                               trailing: Text(
-//                                 index % 2 == 0 ? "৳50.00" : "৳0.00",
-//                                 style: TextStyle(
-//                                   color:
-//                                       index % 2 == 0
-//                                           ? Colors.green
-//                                           : Colors.red,
-//                                   fontWeight: FontWeight.bold,
-//                                 ),
-//                               ),
-//                             ),
-//                           );
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
