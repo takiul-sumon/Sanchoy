@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-
+import 'package:sanchoy/ui/controller/controller_binder.dart';
 import 'package:sanchoy/ui/screans/splash_screan.dart';
+
 
 class Sanchoy extends StatefulWidget {
   const Sanchoy({super.key});
@@ -17,6 +18,7 @@ class _SanchoyState extends State<Sanchoy> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       navigatorKey: Sanchoy.navigatorKey,
+      initialBinding: ControllerBinder(),
 
       theme: ThemeData(
         textTheme: TextTheme(
@@ -42,7 +44,7 @@ class _SanchoyState extends State<Sanchoy> {
           ),
         ),
       ),
-      home: splash_Screan(),
+      home: Splash_Screan(),
     );
   }
 }

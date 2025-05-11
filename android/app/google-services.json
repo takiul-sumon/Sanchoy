@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "100939384024",
+    "project_id": "sanchoy-7c08d",
+    "storage_bucket": "sanchoy-7c08d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:100939384024:android:6c348524ecaad996fd03ad",
+        "android_client_info": {
+          "package_name": "com.example.sanchoy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhgNgPAbghKa7Ov46yfJuoWaV6vqJ8d4Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

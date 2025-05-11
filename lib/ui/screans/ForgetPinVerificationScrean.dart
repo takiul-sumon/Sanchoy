@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 class ForgetPinverificationwithemail extends StatelessWidget {
-  ForgetPinverificationwithemail({super.key});
+  ForgetPinverificationwithemail({super.key, required this.email});
   final TextEditingController _pincodeTEController = TextEditingController();
+  final String email;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,7 @@ class ForgetPinverificationwithemail extends StatelessWidget {
                   Align(
                     alignment: Alignment.center,
                     child: Text(
-                      'Enter OTP Coe',
+                      'Enter OTP Code',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),

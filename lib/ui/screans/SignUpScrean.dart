@@ -1,7 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sanchoy/data/models/Urls.dart';
-import 'package:sanchoy/data/models/services/Newtork_client.dart';
 import 'package:sanchoy/ui/screans/Login_screan.dart';
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
@@ -22,6 +22,7 @@ class _SignUpScreanState extends State<SignUpScrean> {
       TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   bool _regristrationInProgress = false;
+  List<bool> _isSelected = [false, true]; 
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +42,21 @@ class _SignUpScreanState extends State<SignUpScrean> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ToggleButtons(
-                      isSelected: const [false, true],
-                      onPressed: (index) {},
+                      isSelected: _isSelected,
+                      onPressed: (index) {
+                        setState(() {
+                          if (index == 0) {
+                            _isSelected = [true, false]; // Switch to Sign In
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()),
+                            );
+                          } else {
+                            _isSelected = [false, true]; // Stay on Sign Up
+                          }
+                        });
+                      },
                       borderRadius: BorderRadius.circular(10),
                       fillColor: Colors.lightBlue.shade100,
                       children: const [
@@ -94,7 +108,6 @@ class _SignUpScreanState extends State<SignUpScrean> {
                     return null;
                   },
                   autovalidateMode: AutovalidateMode.onUnfocus,
-
                   controller: _emailController,
                 ),
                 const SizedBox(height: 10),
@@ -106,19 +119,19 @@ class _SignUpScreanState extends State<SignUpScrean> {
                   controller: _phoneController,
                   keyboardType: TextInputType.number,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-
                   validator: (String? value) {
                     String number = value?.trim() ?? '';
-                    RegExp regEx = RegExp(r"^(?:\+?88|0088)?01[1-9]\d{8}$");
+                    RegExp regEx = RegExp(r'^(?:\+?88)?01[3-9]\d{8}$');
 
-                    if (regEx.hasMatch(number)) {
-                      return "Enter Your Valid Mobile Number";
+                    if (number.isEmpty) {
+                      return "Phone number is required";
+                    } else if (!regEx.hasMatch(number)) {
+                      return "Enter a valid Bangladeshi mobile number";
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 10),
-
                 TextFormField(
                   decoration: InputDecoration(
                     suffixIcon: IconButton(
@@ -149,14 +162,13 @@ class _SignUpScreanState extends State<SignUpScrean> {
                   controller: _confirmpPasswordController,
                 ),
                 const SizedBox(height: 10),
-
                 Visibility(
                   visible: _regristrationInProgress == false,
                   replacement: CircularProgressIndicator(),
                   child: ElevatedButton(
                     onPressed: onTapSubmitButton,
                     child: Text(
-                      'Log In',
+                      'Sign Up',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
@@ -166,11 +178,10 @@ class _SignUpScreanState extends State<SignUpScrean> {
                   ),
                 ),
                 const SizedBox(height: 10),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Already have account? '),
+                    Text('Already have an account? '),
                     TextButton(
                       onPressed: onTapSignIn,
                       child: Text(
@@ -212,32 +223,49 @@ class _SignUpScreanState extends State<SignUpScrean> {
   Future<void> _registerUser() async {
     _regristrationInProgress = true;
     setState(() {});
-    Map<String, dynamic> requestBody = {
-      "email": _emailController.text.trim(),
-      "firstName": _firstNameController.text.trim(),
-      "lastName": _lasttNameController.text.trim(),
-      "mobile": _phoneController.text.trim(),
-      "password": _passwordController.text,
-    };
-    NetworkResponse response = await NetworkClient.postRequest(
-      url: Urls.registerUrl,
-      body: requestBody,
-    );
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final firstName = _firstNameController.text.trim();
+    final lastName = _lasttNameController.text.trim();
+    final mobile = _phoneController.text.trim();
+
+    try {
+      // Register with Firebase Auth
+      UserCredential userCred = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+
+      // Send email verification
+      await userCred.user!.sendEmailVerification();
+
+      // Save additional data to Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCred.user!.uid)
+          .set({
+            'firstName': firstName,
+            'lastName': lastName,
+            'email': email,
+            'mobile': mobile,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+
+      showShackBarMessenger(
+        context,
+        "Verification email sent. Please check your inbox.",
+      );
+      _clearTextFields();
+
+      // Redirect to login page
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
+    } on FirebaseAuthException catch (e) {
+      showShackBarMessenger(context, e.message ?? "Registration failed", true);
+    }
+
     _regristrationInProgress = false;
     setState(() {});
-    if (response.isSuccess) {
-      _clearTextFields();
-      showShackBarMessenger(context, "Successful");
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) {
-            return LoginScreen();
-          },
-        ),
-      );
-    } else {
-      showShackBarMessenger(context, response.errorMessage.toString(), true);
-    }
   }
 
   void _clearTextFields() {

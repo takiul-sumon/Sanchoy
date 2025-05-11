@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:sanchoy/ui/screans/Login_screan.dart';
+import 'package:sanchoy/ui/screans/MainButtomNavScreen.dart';
 
-class splash_Screan extends StatefulWidget {
-  const splash_Screan({super.key});
+class Splash_Screan extends StatefulWidget {
+  const Splash_Screan({super.key});
 
   @override
-  State<splash_Screan> createState() => _splash_ScreanState();
+  State<Splash_Screan> createState() => _splash_ScreanState();
 }
 
-class _splash_ScreanState extends State<splash_Screan> {
+class _splash_ScreanState extends State<Splash_Screan> {
   @override
   void initState() {
     super.initState();
@@ -19,19 +19,14 @@ class _splash_ScreanState extends State<splash_Screan> {
     await Future.delayed(Duration(seconds: 2));
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
+      MaterialPageRoute(builder: (context) => Mainbuttomnavscreen()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Image.asset(
-          'assets/images/splash_screan.png',
-          fit: BoxFit.contain,
-        ),
-      ),
+      body: Image.asset('assets/images/splash_screan.png', fit: BoxFit.contain),
     );
   }
 }
