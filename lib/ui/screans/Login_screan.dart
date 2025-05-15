@@ -25,8 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Form(
             key: _formkey,
             child: Column(
@@ -45,9 +45,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: (index) {
                         setState(() {
                           if (index == 0) {
-                            _isSelected = [true, false]; // Stay on Sign In
+                            _isSelected = [true, false];
                           } else {
-                            _isSelected = [false, true]; // Switch to Sign Up
+                            _isSelected = [false, true];
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -74,7 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Email Input
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Email',
@@ -82,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  autovalidateMode: AutovalidateMode.onUnfocus,
+                  // autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (String? value) {
                     String email = value?.trim() ?? '';
                     if (EmailValidator.validate(email) == false ||
@@ -93,9 +92,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
 
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
 
-                // Password Input
                 TextFormField(
                   obscureText: true,
                   decoration: InputDecoration(
@@ -114,24 +112,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 5),
 
-                // Forget Password Link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: onTapForgetPassword,
-                      child: Text(
-                        'Forget Password?',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                // const SizedBox(height: 5),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: TextButton(
+                    onPressed: onTapForgetPassword,
+                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                    child: Text(
+                      'Forget Password?',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff0F2F4C),
                       ),
                     ),
-                  ],
+                  ),
                 ),
                 const SizedBox(height: 15),
 
-                // Login Button
                 ElevatedButton(
                   onPressed: onTapSignInButton,
                   child: Text(
@@ -149,25 +147,51 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Don\'t have an account?'),
+                    Text(
+                      'Don\'t have an account?',
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: 13,
+                        color: Color(0xff0F2F4C),
+                      ),
+                    ),
                     TextButton(
                       onPressed: onTapSignUpPassword,
+                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
                       child: Text(
                         "Sign up",
                         style: const TextStyle(
-                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                          color: Color(0xff0F2F4C),
+                          fontSize: 13,
+                          fontFamily: 'Poppins-Regular',
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Center(child: Text("Or sign in with")),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(height: 1, width: 140, color: Color(0xff0F2F4C)),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                      child: Text(
+                        "Or sign in with",
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Regular',
+                          color: Color(0xff0F2F4C),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    Container(height: 1, width: 140, color: Color(0xff0F2F4C)),
+                  ],
+                ),
                 const SizedBox(height: 10),
 
-                // Google Sign In Button
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
@@ -175,7 +199,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     backgroundColor: Color(0xFFBBD3E8),
-                    foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                   ),
                   child: Image.asset('assets/icons/google.png'),

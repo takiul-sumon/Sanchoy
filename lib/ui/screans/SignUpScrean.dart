@@ -22,7 +22,7 @@ class _SignUpScreanState extends State<SignUpScrean> {
       TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   bool _regristrationInProgress = false;
-  List<bool> _isSelected = [false, true]; 
+  List<bool> _isSelected = [false, true];
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +35,7 @@ class _SignUpScreanState extends State<SignUpScrean> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 10),
                 Center(child: Image.asset('assets/images/sign_up.png')),
-                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -50,7 +48,8 @@ class _SignUpScreanState extends State<SignUpScrean> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LoginScreen()),
+                                builder: (context) => LoginScreen(),
+                              ),
                             );
                           } else {
                             _isSelected = [false, true]; // Stay on Sign Up
@@ -72,7 +71,7 @@ class _SignUpScreanState extends State<SignUpScrean> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 20),
 
                 TextFormField(
                   decoration: InputDecoration(
@@ -181,19 +180,58 @@ class _SignUpScreanState extends State<SignUpScrean> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Already have an account? '),
+                    Text(
+                      'Already have an account?',
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: 13,
+                        color: Color(0xff0F2F4C),
+                      ),
+                    ),
                     TextButton(
                       onPressed: onTapSignIn,
+                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
                       child: Text(
                         "Sign In",
                         style: const TextStyle(
-                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                          color: Color(0xff0F2F4C),
+                          fontSize: 13,
+                          fontFamily: 'Poppins-Regular',
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
                         ),
                       ),
                     ),
                   ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(height: 1, width: 140, color: Color(0xff0F2F4C)),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                      child: Text(
+                        "Or sign in with",
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Regular',
+                          color: Color(0xff0F2F4C),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    Container(height: 1, width: 140, color: Color(0xff0F2F4C)),
+                  ],
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    backgroundColor: Color(0xFFBBD3E8),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                  child: Image.asset('assets/icons/google.png'),
                 ),
               ],
             ),

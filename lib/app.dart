@@ -16,8 +16,7 @@ class _SanchoyState extends State<Sanchoy> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      debugShowCheckedModeBanner: false
-      ,
+      debugShowCheckedModeBanner: false,
       navigatorKey: Sanchoy.navigatorKey,
       initialBinding: ControllerBinder(),
 
@@ -27,7 +26,11 @@ class _SanchoyState extends State<Sanchoy> {
         ),
         inputDecorationTheme: InputDecorationTheme(
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blue, strokeAlign: 5),
+            borderSide: BorderSide(
+              color: Colors.blue,
+              strokeAlign: 5,
+              width: 2,
+            ),
             borderRadius: BorderRadius.circular(12),
           ),
           focusedBorder: OutlineInputBorder(
