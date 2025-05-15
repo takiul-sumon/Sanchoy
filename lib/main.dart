@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:sanchoy/app.dart';
 import 'package:sanchoy/firebase_options.dart';
 
-void main()async {
-   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const Sanchoy());
 }
+

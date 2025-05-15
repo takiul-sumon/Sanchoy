@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sanchoy/firebase_options.dart'; 
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
 class AddCustomerSupplierPage extends StatefulWidget {
@@ -18,15 +20,27 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
   final TextEditingController _nameTEController = TextEditingController();
   final TextEditingController _phoneTEController = TextEditingController();
   final TextEditingController _locationTEController = TextEditingController();
-  final TextEditingController _previousDueTEController = TextEditingController(); // NEW
+  final TextEditingController _previousDueTEController =
+      TextEditingController();
+
   final ImagePicker _picker = ImagePicker();
   XFile? _pickedImage;
   DateTime? _selectedDate;
+
+  FirebaseApp? _secondaryApp;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _initializeSecondaryApp();
+  }
+
+  Future<void> _initializeSecondaryApp() async {
+    _secondaryApp = await Firebase.initializeApp(
+      name: 'SecondaryApp',
+      options: DefaultFirebaseOptions.secondaryFirebaseOptions,
+    );
   }
 
   @override
@@ -216,7 +230,7 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
   }
 
   Future<void> onTapGetImage() async {
-    XFile? image = await _picker.pickImage(source: ImageSource.camera);
+    XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       setState(() {
         _pickedImage = image;
@@ -240,30 +254,69 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
     }
 
     String type = _tabController.index == 0 ? 'Customer' : 'Supplier';
+    String location = _locationTEController.text.trim();
 
-    await FirebaseFirestore.instance.collection('entries').add({
+    Map<String, dynamic> data = {
       'name': _nameTEController.text.trim(),
       'phone': _phoneTEController.text.trim(),
-      'location': _locationTEController.text.trim(),
+      'location': location,
       'previous_due':
           double.tryParse(_previousDueTEController.text.trim()) ?? 0.0,
       'photo': photoUrl,
       'type': type,
       'selected_date':
           _selectedDate != null ? Timestamp.fromDate(_selectedDate!) : null,
-    });
+    };
 
-    showShackBarMessenger(context, "Entry added successfully", true);
+    try {
+      await FirebaseFirestore.instance.collection('entries').add(data);
 
-    Navigator.of(context).pop();
+      if (location.toLowerCase() == "dhaka") {
+        if (_secondaryApp == null) {
+          showShackBarMessenger(
+            context,
+            "Secondary Firebase not initialized",
+            false,
+          );
+          return;
+        }
+
+        await FirebaseFirestore.instanceFor(
+          app: _secondaryApp!,
+        ).collection('entries').add(data);
+      }
+
+      if (location.toLowerCase() == "rajshahi") {
+        await FirebaseFirestore.instanceFor(
+          app: _secondaryApp!,
+        ).collection('entries1').add(data);
+      }
+
+      if (location.toLowerCase() == "barishal") {
+        await FirebaseFirestore.instanceFor(
+          app: _secondaryApp!,
+        ).collection('entries2').add(data);
+      }
+      if (location.toLowerCase() == "rangpur") {
+        await FirebaseFirestore.instanceFor(
+          app: _secondaryApp!,
+        ).collection('entries4').add(data);
+      }
+
+      showShackBarMessenger(context, "Entry added successfully", true);
+      Navigator.of(context).pop();
+    } catch (e) {
+      showShackBarMessenger(context, "Failed to add entry: $e", false);
+    }
   }
 
   @override
   void dispose() {
     _nameTEController.dispose();
+
     _phoneTEController.dispose();
     _locationTEController.dispose();
-    _previousDueTEController.dispose(); // NEW
+    _previousDueTEController.dispose();
     super.dispose();
   }
 }

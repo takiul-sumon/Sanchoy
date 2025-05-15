@@ -3,7 +3,6 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:sanchoy/ui/controller/controller_binder.dart';
 import 'package:sanchoy/ui/screans/splash_screan.dart';
 
-
 class Sanchoy extends StatefulWidget {
   const Sanchoy({super.key});
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -17,6 +16,8 @@ class _SanchoyState extends State<Sanchoy> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false
+      ,
       navigatorKey: Sanchoy.navigatorKey,
       initialBinding: ControllerBinder(),
 

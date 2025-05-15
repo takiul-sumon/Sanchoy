@@ -59,4 +59,12 @@ class DefaultFirebaseOptions {
     projectId: 'sanchoy-7c08d',
     storageBucket: 'sanchoy-7c08d.firebasestorage.app',
   );
+
+  static const FirebaseOptions secondaryFirebaseOptions = FirebaseOptions(
+    apiKey: 'AIzaSyA2Oe-fCn6JYsvGG8ciQT4-RfP315orXl0',
+    appId: '1:495280599537:android:14d08d60dd3206907ad450',
+    messagingSenderId: '495280599537',
+    projectId: 'fragmentationstore',
+    storageBucket: 'fragmentationstore.appspot.com',
+  );
 }
