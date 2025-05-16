@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
+import 'package:sanchoy/data/models/ShowOwnerModel.dart';
 import 'package:sanchoy/ui/screans/Customer_Deatils.dart';
 import 'package:sanchoy/ui/screans/add_curstomer.dart';
 
@@ -13,6 +15,35 @@ class Mainbuttomnavscreen extends StatefulWidget {
 }
 
 class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  List<Showownermodel> showOwnerdata = [];
+  bool isLoading = true;
+  DateTime date = DateTime.now();
+
+  @override
+  void initState() {
+    fetchOwnerdata();
+
+    super.initState();
+  }
+
+  Future<void> fetchOwnerdata() async {
+    isLoading = true;
+    setState(() {});
+    final QuerySnapshot snapshot = await db.collection('users').get();
+    for (QueryDocumentSnapshot doc in snapshot.docs) {
+      Showownermodel showownermodel = Showownermodel.formJson(
+        doc.id,
+        doc.data() as Map<String, dynamic>,
+      );
+
+      showOwnerdata.add(showownermodel);
+      print(showOwnerdata);
+    }
+    isLoading = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -32,9 +63,11 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        'Monir Tea Stall',
+                        showOwnerdata.isNotEmpty
+                            ? '${showOwnerdata[0].firstName.toString()}  ${showOwnerdata[0].lastName.toString()}'
+                            : '',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -42,8 +75,8 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
                         ),
                       ),
                       Text(
-                        '04 March, 2025',
-                        style: TextStyle(color: Colors.white70),
+                        DateFormat.yMMMEd().format(date),
+                        style: TextStyle(color: Colors.white),
                       ),
                     ],
                   ),

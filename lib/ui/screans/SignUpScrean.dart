@@ -22,7 +22,6 @@ class _SignUpScreanState extends State<SignUpScrean> {
       TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   bool _regristrationInProgress = false;
-  List<bool> _isSelected = [false, true];
 
   @override
   Widget build(BuildContext context) {
@@ -36,42 +35,78 @@ class _SignUpScreanState extends State<SignUpScrean> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(child: Image.asset('assets/images/sign_up.png')),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                SizedBox(height: 10),
+                Stack(
+                  alignment: Alignment.center,
                   children: [
-                    ToggleButtons(
-                      isSelected: _isSelected,
-                      onPressed: (index) {
-                        setState(() {
-                          if (index == 0) {
-                            _isSelected = [true, false]; // Switch to Sign In
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoginScreen(),
+                    Container(
+                      height: 60,
+                      width: 250,
+
+                      decoration: BoxDecoration(
+                        color: Color(0xffBBD3E8),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 5,
+                      left: 5,
+                      right: 5,
+                      top: 5,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 50,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
                               ),
-                            );
-                          } else {
-                            _isSelected = [false, true]; // Stay on Sign Up
-                          }
-                        });
-                      },
-                      borderRadius: BorderRadius.circular(10),
-                      fillColor: Colors.lightBlue.shade100,
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 40),
-                          child: Text('Sign In'),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 40),
-                          child: Text('Sign Up'),
-                        ),
-                      ],
+                            ),
+                            child: Center(
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                ),
+                                onPressed: onTapSignIn,
+                                child: Text(
+                                  'Sign In',
+                                  style: TextStyle(
+                                    color: Color(0xff0F2F4C),
+                                    fontFamily: 'Poppins-Regular',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Container(
+                            height: 40,
+                            width: 120,
+                            decoration: BoxDecoration(
+                              color: Color(0xff2370B4),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins-Regular',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 10),
 
                 TextFormField(
                   decoration: InputDecoration(
@@ -176,7 +211,7 @@ class _SignUpScreanState extends State<SignUpScrean> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -222,6 +257,7 @@ class _SignUpScreanState extends State<SignUpScrean> {
                     Container(height: 1, width: 140, color: Color(0xff0F2F4C)),
                   ],
                 ),
+                const SizedBox(height: 5),
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(

@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   final LoginController _loginController = Get.find<LoginController>();
-  List<bool> _isSelected = [true, false]; // [Sign In, Sign Up]
+  // List<bool> _isSelected = [true, false]; // [Sign In, Sign Up]
 
   @override
   Widget build(BuildContext context) {
@@ -37,38 +37,73 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Image.asset('assets/images/Group.png', height: 150),
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Stack(
+                  alignment: Alignment.center,
                   children: [
-                    ToggleButtons(
-                      isSelected: _isSelected,
-                      onPressed: (index) {
-                        setState(() {
-                          if (index == 0) {
-                            _isSelected = [true, false];
-                          } else {
-                            _isSelected = [false, true];
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SignUpScrean(),
+                    Container(
+                      height: 60,
+                      width: 250,
+                      // color: Colors.amber,
+                      decoration: BoxDecoration(
+                        color: Color(0xffBBD3E8),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 5,
+                      left: 5,
+                      right: 5,
+                      top: 5,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 40,
+                            width: 120,
+                            decoration: BoxDecoration(
+                              color: Color(0xff2370B4),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
                               ),
-                            );
-                          }
-                        });
-                      },
-                      borderRadius: BorderRadius.circular(10),
-                      fillColor: Colors.lightBlue.shade100,
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 40),
-                          child: Text('Sign In'),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 40),
-                          child: Text('Sign Up'),
-                        ),
-                      ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins-Regular',
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Container(
+                            height: 50,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                            child: Center(
+                              child: TextButton(
+                                onPressed: onTapSignUpPassword,
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                ),
+                                child: Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                    color: Color(0xff0F2F4C),
+                                    fontFamily: 'Poppins-Regular',
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
