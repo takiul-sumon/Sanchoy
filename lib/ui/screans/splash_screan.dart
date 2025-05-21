@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sanchoy/ui/screans/Customer_Deatils.dart';
 import 'package:sanchoy/ui/screans/Login_screan.dart';
 
 class Splash_Screan extends StatefulWidget {
@@ -19,7 +20,7 @@ class _splash_ScreanState extends State<Splash_Screan> {
     await Future.delayed(Duration(seconds: 2));
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
+      MaterialPageRoute(builder: (context) => CustomerDetailsPage()),
     );
   }
 
