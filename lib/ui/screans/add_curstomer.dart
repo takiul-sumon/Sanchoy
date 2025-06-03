@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sanchoy/firebase_options.dart'; 
+import 'package:sanchoy/firebase_options.dart';
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
 class AddCustomerSupplierPage extends StatefulWidget {
@@ -22,6 +22,7 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
   final TextEditingController _locationTEController = TextEditingController();
   final TextEditingController _previousDueTEController =
       TextEditingController();
+  final GlobalKey<FormState> _key = GlobalKey<FormState>();
 
   final ImagePicker _picker = ImagePicker();
   XFile? _pickedImage;
@@ -46,61 +47,69 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            height: double.infinity,
-            decoration: const BoxDecoration(color: Color(0xff2370B4)),
-          ),
-          Positioned(
-            top: 50,
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Image.asset(
-                    'assets/icons/Success Icon.png',
-                    color: Colors.white,
-                  ),
-                ),
-                const Text(
-                  'Add Customer/Supplier',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 100,
-            right: 0,
-            left: 0,
-            child: Container(
-              height: 850 - 100,
-              decoration: BoxDecoration(
-                color: const Color(0xffE9F1F8),
-                borderRadius: BorderRadius.circular(15),
+      body: Form(
+        key: _key,
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Container(
+                height: double.infinity,
+                decoration: const BoxDecoration(color: Color(0xff2370B4)),
               ),
-              child: Column(
-                children: [
-                  TabBar(
-                    controller: _tabController,
-                    labelColor: Colors.black,
-                    indicatorColor: Colors.blue,
-                    tabs: const [Tab(text: 'Customer'), Tab(text: 'Supplier')],
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [_buildForm(), _buildForm()],
+              Positioned(
+                top: 20,
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Image.asset(
+                        'assets/icons/Success Icon.png',
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
+                    const Text(
+                      'Add Customer/Supplier',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
-            ),
+              Positioned(
+                top: 90,
+                right: 0,
+                left: 0,
+                child: Container(
+                  height: 850 - 100,
+                  decoration: BoxDecoration(
+                    color: const Color(0xffE9F1F8),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    children: [
+                      TabBar(
+                        controller: _tabController,
+                        labelColor: Colors.black,
+                        indicatorColor: Colors.blue,
+                        tabs: const [
+                          Tab(text: 'Customer'),
+                          Tab(text: 'Supplier'),
+                        ],
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: [_buildForm(), _buildForm()],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -132,6 +141,13 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
               controller: _nameTEController,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.name,
+              validator: (String? value) {
+                String name = value!;
+                if (name.isEmpty) {
+                  return "Enter A name";
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 10),
             TextFormField(
@@ -142,6 +158,20 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
               controller: _phoneTEController,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.phone,
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Phone number is required';
+                }
+
+                final pattern = r'^(?:\+?88)?01[3-9]\d{8}$';
+                final regExp = RegExp(pattern);
+
+                if (!regExp.hasMatch(value)) {
+                  return 'Enter a valid BD phone number';
+                }
+
+                return null;
+              },
             ),
             const SizedBox(height: 10),
             TextFormField(
@@ -162,6 +192,12 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
               controller: _previousDueTEController,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.number,
+              validator: (String? value) {
+                if (value!.isEmpty) {
+                  return "Enter a amount";
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 16),
             Row(
@@ -201,7 +237,7 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: _submitForm,
+              onPressed: onTapValidate,
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
                 backgroundColor: Colors.blue,
@@ -235,6 +271,12 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
       setState(() {
         _pickedImage = image;
       });
+    }
+  }
+
+  onTapValidate() {
+    if (_key.currentState!.validate()) {
+      _submitForm();
     }
   }
 

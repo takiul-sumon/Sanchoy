@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:sanchoy/ui/screans/Customer_Deatils.dart';
-import 'package:sanchoy/ui/screans/Login_screan.dart';
+import 'package:sanchoy/ui/screans/MainButtomNavScreen.dart';
 
-class Splash_Screan extends StatefulWidget {
-  const Splash_Screan({super.key});
+class SplashScrean extends StatefulWidget {
+  const SplashScrean({super.key});
 
   @override
-  State<Splash_Screan> createState() => _splash_ScreanState();
+  State<SplashScrean> createState() => _SplashScreanState();
 }
 
-class _splash_ScreanState extends State<Splash_Screan> {
+class _SplashScreanState extends State<SplashScrean> {
   @override
   void initState() {
     super.initState();
@@ -20,7 +19,7 @@ class _splash_ScreanState extends State<Splash_Screan> {
     await Future.delayed(Duration(seconds: 2));
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => CustomerDetailsPage()),
+      MaterialPageRoute(builder: (context) => Mainbuttomnavscreen()),
     );
   }
 

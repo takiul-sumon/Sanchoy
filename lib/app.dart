@@ -48,7 +48,7 @@ class _SanchoyState extends State<Sanchoy> {
           ),
         ),
       ),
-      home: Splash_Screan(),
+      home: SplashScrean(),
     );
   }
 }

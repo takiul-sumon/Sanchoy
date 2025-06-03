@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:sanchoy/ui/screans/ForgetPinVerificationScrean.dart';
 import 'package:sanchoy/ui/screans/Login_screan.dart';
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
-class ForgetPasswordWithPhone extends StatefulWidget {
-  const ForgetPasswordWithPhone({super.key});
+class ForgetPasswordWithEmail extends StatefulWidget {
+  const ForgetPasswordWithEmail({super.key});
 
   @override
-  State<ForgetPasswordWithPhone> createState() =>
-      _ForgetPasswordWithPhoneState();
+  State<ForgetPasswordWithEmail> createState() =>
+      _ForgetPasswordWithEmailState();
 }
 
-class _ForgetPasswordWithPhoneState extends State<ForgetPasswordWithPhone> {
-  final TextEditingController _phoneController = TextEditingController();
-  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-  bool _isSendingOtp = false;
+class _ForgetPasswordWithEmailState extends State<ForgetPasswordWithEmail> {
+  final TextEditingController _emailController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isSending = false;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,7 @@ class _ForgetPasswordWithPhoneState extends State<ForgetPasswordWithPhone> {
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Form(
-          key: _formkey,
+          key: _formKey,
           child: Column(
             children: [
               const SizedBox(height: 40),
@@ -31,44 +30,51 @@ class _ForgetPasswordWithPhoneState extends State<ForgetPasswordWithPhone> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.arrow_back_ios),
+                    onPressed:
+                        () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return LoginScreen();
+                            },
+                          ),
+                        ),
+                    icon: const Icon(Icons.arrow_back_ios),
                   ),
                   Text(
                     'Forget Password',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  SizedBox(width: 40), // Placeholder to balance back icon
+                  const SizedBox(width: 40),
                 ],
               ),
               const SizedBox(height: 20),
               Image.asset('assets/images/undraw_forgot-password_odai 1.png'),
               const SizedBox(height: 10),
-              Text(
-                'Enter your phone number to receive an OTP \n to reset your password.',
+              const Text(
+                'Enter your email to receive a password reset link.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 20),
               TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  hintText: 'Phone Number',
-                  prefixIcon: Icon(Icons.phone),
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  hintText: 'Email Address',
+                  prefixIcon: Icon(Icons.email),
                 ),
                 validator: (value) {
                   if (value == null ||
                       value.trim().isEmpty ||
-                      value.length < 10) {
-                    return 'Enter a valid phone number';
+                      !value.contains('@')) {
+                    return 'Enter a valid email address';
                   }
                   return null;
                 },
               ),
               TextButton(
-                onPressed: onTapSignIn,
-                child: Text(
+                onPressed: _onTapSignIn,
+                child: const Text(
                   'Back to Sign In',
                   style: TextStyle(color: Color(0xff0F2F4C)),
                 ),
@@ -76,12 +82,12 @@ class _ForgetPasswordWithPhoneState extends State<ForgetPasswordWithPhone> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _isSendingOtp ? null : _sendOtp,
+                  onPressed: _isSending ? null : _sendPasswordResetEmail,
                   child:
-                      _isSendingOtp
-                          ? CircularProgressIndicator(color: Colors.white)
-                          : Text(
-                            'Send OTP',
+                      _isSending
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                            'Send Reset Link',
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
@@ -97,42 +103,29 @@ class _ForgetPasswordWithPhoneState extends State<ForgetPasswordWithPhone> {
     );
   }
 
-  void onTapSignIn() {
+  void _onTapSignIn() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => LoginScreen()),
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
     );
   }
 
-  Future<void> _sendOtp() async {
-    if (_formkey.currentState!.validate()) {
-      setState(() => _isSendingOtp = true);
+  Future<void> _sendPasswordResetEmail() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isSending = true);
 
-      String phone = _phoneController.text.trim();
+      final email = _emailController.text.trim();
 
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: phone,
-        verificationCompleted: (PhoneAuthCredential credential) {},
-        verificationFailed: (FirebaseAuthException e) {
-          showShackBarMessenger(context, "OTP Failed: ${e.message}", true);
-          setState(() => _isSendingOtp = false);
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          showShackBarMessenger(context, "OTP sent to $phone", false);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) =>   ForgetPinverificationwithemail(
-                    // phoneNumber: phone,
-                    // verificationId: verificationId,
-                    email: _phoneController.text,
-                  ),
-            ),
-          );
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {},
-      );
+      try {
+        await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+        showShackBarMessenger(context, "Reset link sent to $email", false);
+      } on FirebaseAuthException catch (e) {
+        showShackBarMessenger(context, e.message ?? "An error occurred", true);
+      } catch (e) {
+        showShackBarMessenger(context, "Something went wrong", true);
+      }
+
+      setState(() => _isSending = false);
     }
   }
 }

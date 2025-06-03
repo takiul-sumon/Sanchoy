@@ -281,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) {
-          return ForgetPasswordWithPhone();
+          return ForgetPasswordWithEmail();
         },
       ),
     );
