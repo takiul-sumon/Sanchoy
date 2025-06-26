@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sanchoy/ui/screans/MainButtomNavScreen.dart';
+import 'package:sanchoy/ui/screans/Login_screan.dart';
+import 'package:sanchoy/ui/screans/bottom_navigation_bar.dart';
 
 class SplashScrean extends StatefulWidget {
   const SplashScrean({super.key});
@@ -19,7 +20,7 @@ class _SplashScreanState extends State<SplashScrean> {
     await Future.delayed(Duration(seconds: 2));
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => Mainbuttomnavscreen()),
+      MaterialPageRoute(builder: (context) => BottomNaviationBar()),
     );
   }
 

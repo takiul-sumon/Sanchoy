@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
+import 'package:sanchoy/ui/screans/MainButtomNavScreen.dart';
+import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
 class CustomerDetailsPage extends StatefulWidget {
   final String customerid;
@@ -19,15 +21,18 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
   final ImagePicker _picker = ImagePicker();
 
   DateTime? _selectedDate;
-  bool isLoading = true;
   List<Showcustomersuppliermodel> showOwnerdata = [];
   FirebaseFirestore db = FirebaseFirestore.instance;
   List<Showcustomersuppliermodel> showCustomerData = [];
   List<Showcustomersuppliermodel> sortSelectedCustomerData = [];
-  TextEditingController dueAmountTEController = TextEditingController();
+  final TextEditingController _previousDueTEController =
+      TextEditingController();
   TextEditingController paidAmountTEController = TextEditingController();
   TextEditingController descriptionTEController = TextEditingController();
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
+  double customerDue = 0;
+  double supplierDue = 0;
+  double netAmount = 0;
 
   @override
   void initState() {
@@ -37,11 +42,10 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
   }
 
   Future<void> fetchOwnerdata() async {
-    isLoading = true;
     setState(() {});
     try {
       final DocumentSnapshot doc =
-          await db.collection('entries').doc(widget.customerid).get();
+          await db.collection('entries1').doc(widget.customerid).get();
       if (doc.exists) {
         final Showcustomersuppliermodel showownermodel =
             Showcustomersuppliermodel.fromJson(
@@ -56,16 +60,12 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
     } catch (e) {
       print("Error fetching owner data: $e");
     }
-    isLoading = false;
     setState(() {});
   }
 
   Future<void> fetchCustomerdata() async {
-    isLoading = true;
-    setState(() {});
-
     final DocumentSnapshot doc =
-        await db.collection('entries').doc(widget.customerid).get();
+        await db.collection('entries1').doc(widget.customerid).get();
     final Showcustomersuppliermodel showownermodel =
         Showcustomersuppliermodel.fromJson(
           doc.id,
@@ -76,7 +76,7 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
 
     //Different Part
 
-    final QuerySnapshot snapshot = await db.collection('entries').get();
+    final QuerySnapshot snapshot = await db.collection('entries1').get();
     for (QueryDocumentSnapshot doc in snapshot.docs) {
       Showcustomersuppliermodel showcustomermodel =
           Showcustomersuppliermodel.fromJson(
@@ -90,349 +90,418 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
       if (showCustomerData[i].name == showOwnerdata[0].name &&
           showCustomerData[i].phone == showOwnerdata[0].phone) {
         sortSelectedCustomerData.add(showCustomerData[i]);
-        print('object');
       }
     }
-    isLoading = false;
+    for (int i = 0; i < sortSelectedCustomerData.length; i++) {
+      if (sortSelectedCustomerData[i].paidAmount != 0) {
+        customerDue += sortSelectedCustomerData[i].paidAmount;
+      } else {
+        supplierDue += sortSelectedCustomerData[i].previousDue;
+      }
+    }
+    netAmount = customerDue - supplierDue;
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Form(
-        key: _key,
-        child: Stack(
-          children: [
-            Container(
-              height: double.infinity,
-              decoration: const BoxDecoration(color: Color(0xff2370B4)),
-            ),
-            Positioned(
-              top: 50,
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Image.asset(
-                      'assets/icons/Success Icon.png',
-                      color: Colors.white,
-                    ),
-                  ),
-                  const Text(
-                    'Customer Details',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ],
+      body: SafeArea(
+        child: Form(
+          key: _key,
+          child: Stack(
+            children: [
+              Container(
+                height: double.infinity,
+                decoration: const BoxDecoration(color: Color(0xff2370B4)),
               ),
-            ),
-            Positioned(
-              top: 100,
-              right: 0,
-              left: 0,
-              child: Container(
-                height: 810,
-                decoration: BoxDecoration(
-                  color: const Color(0xffE9F1F8),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
+              Positioned(
+                top: 20,
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        SizedBox(
-                          height: 80,
-                          width: 285,
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage:
-                                  showOwnerdata.isNotEmpty &&
-                                          _shouldShowImage(
-                                            showOwnerdata[0].photo,
-                                          )
-                                      ? MemoryImage(
-                                        base64Decode(showOwnerdata[0].photo),
-                                      )
-                                      : null,
-                            ),
-                            title: Text(
-                              showOwnerdata.isNotEmpty
-                                  ? showOwnerdata[0].name
-                                  : '',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return Mainbuttomnavscreen();
+                            },
+                          ),
+                        );
+                      },
+                      icon: Image.asset(
+                        'assets/icons/Success Icon.png',
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      showOwnerdata.isNotEmpty
+                          ? showOwnerdata[0].relationType == 'Customer'
+                              ? 'Customer Details'
+                              : 'Supplier Details'
+                          : '',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 70,
+                right: 0,
+                left: 0,
+                child: Container(
+                  height: 810,
+                  decoration: BoxDecoration(
+                    color: const Color(0xffE9F1F8),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 80,
+                            width: 285,
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage:
+                                    showOwnerdata.isNotEmpty &&
+                                            _shouldShowImage(
+                                              showOwnerdata[0].photo,
+                                            )
+                                        ? MemoryImage(
+                                          base64Decode(showOwnerdata[0].photo),
+                                        )
+                                        : null,
+                              ),
+                              title: Text(
+                                showOwnerdata.isNotEmpty
+                                    ? showOwnerdata[0].name
+                                    : '',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              subtitle: Text(
+                                showOwnerdata.isNotEmpty
+                                    ? showOwnerdata[0].phone
+                                    : '',
+                                style: TextStyle(color: Color(0xff5B5B5B)),
                               ),
                             ),
-                            subtitle: Text(
-                              showOwnerdata.isNotEmpty
-                                  ? showOwnerdata[0].phone
-                                  : '',
-                              style: TextStyle(color: Color(0xff5B5B5B)),
-                            ),
                           ),
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            SizedBox(
-                              height: 27,
-                              width: 125,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Address',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Color(0xff5B5B5B),
+                          Row(
+                            // crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              // SizedBox(
+                              //   height: 27,
+                              //   width: 125,
+                              //   child: Column(
+                              //     // mainAxisAlignment: MainAxisAlignment.start,
+                              //     // crossAxisAlignment: CrossAxisAlignment.start,
+                              //     children: [
+                              //       TextButton(
+                              //         onPressed: () {},
+                              //         child: Text('Delete'),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
+                              TextButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return Center(
+                                        child: Container(
+                                          color: Color(0xffE9F1F8),
+                                          height: 100,
+                                          width: 390,
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                'Delete Customer',
+                                                style: TextStyle(fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStateProperty.all<Color>(
+                                        Colors.red,
+                                      ),
+                                  shape: WidgetStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
-                                  Text(
-                                    showOwnerdata.isNotEmpty
-                                        ? showOwnerdata[0].location
-                                        : '',
-                                    style: TextStyle(
-                                      fontSize: 9,
-                                      color: Color(0xff5B5B5B),
+                                ),
+                                child: Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 244,
+                        width: 380,
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 50,
+                              width: 450,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _previousDueTEController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Due amount',
+                                        prefixIcon: Image.asset(
+                                          'assets/icons/taka.png',
+                                        ),
+                                        hintStyle: TextStyle(
+                                          color: Color(0xffE80000),
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Poppins-Regular',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: paidAmountTEController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Paid amount',
+                                        prefixIcon: Image.asset(
+                                          'assets/icons/taka.png',
+                                          color: Color(0xff007D00),
+                                        ),
+                                        hintStyle: TextStyle(
+                                          color: Color(0xff007D00),
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Poppins-Regular',
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 244,
-                      width: 380,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            width: 450,
-                            child: Row(
+                            SizedBox(height: 10),
+                            TextFormField(
+                              controller: descriptionTEController,
+                              decoration: InputDecoration(
+                                hintText: 'Description',
+                                prefixIcon: Image.asset(
+                                  'assets/icons/Description.png',
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Row(
                               children: [
                                 Expanded(
-                                  child: TextFormField(
-                                    controller: dueAmountTEController,
-                                    decoration: InputDecoration(
-                                      hintText: 'Due amount',
-                                      prefixIcon: Image.asset(
-                                        'assets/icons/taka.png',
-                                      ),
-                                      hintStyle: TextStyle(
-                                        color: Color(0xffE80000),
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Poppins-Regular',
+                                  child: ElevatedButton.icon(
+                                    icon: Image.asset(
+                                      'assets/icons/uiw_date.png',
+                                    ),
+                                    label: Text(
+                                      _selectedDate == null
+                                          ? 'Pick Date'
+                                          : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
+                                    ),
+                                    onPressed: _pickDate,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xffBBD3E8),
+                                      foregroundColor: Color(0xff000000),
+                                      elevation: 0,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
                                       ),
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 5),
+                                const SizedBox(width: 152),
                                 Expanded(
-                                  child: TextFormField(
-                                    controller: paidAmountTEController,
-                                    decoration: InputDecoration(
-                                      hintText: 'Paid amount',
-                                      prefixIcon: Image.asset(
-                                        'assets/icons/taka.png',
-                                        color: Color(0xff007D00),
-                                      ),
-                                      hintStyle: TextStyle(
-                                        color: Color(0xff007D00),
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Poppins-Regular',
+                                  child: ElevatedButton.icon(
+                                    icon: Image.asset(
+                                      'assets/icons/capture.png',
+                                    ),
+                                    label: const Text('Photo'),
+                                    onPressed: onTapGetImage,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xffBBD3E8),
+                                      foregroundColor: Color(0xff000000),
+                                      elevation: 0,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
                                       ),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          TextFormField(
-                            controller: descriptionTEController,
-                            decoration: InputDecoration(
-                              hintText: 'Description',
-                              prefixIcon: Image.asset(
-                                'assets/icons/Description.png',
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  icon: Image.asset(
-                                    'assets/icons/uiw_date.png',
-                                  ),
-                                  label: Text(
-                                    _selectedDate == null
-                                        ? 'Pick Date'
-                                        : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
-                                  ),
-                                  onPressed: _pickDate,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xffBBD3E8),
-                                    foregroundColor: Color(0xff000000),
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                  ),
+                            SizedBox(height: 10),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _submitForm(
+                                    showCustomerData.isNotEmpty
+                                        ? showOwnerdata[0].name
+                                        : '',
+                                    showCustomerData.isNotEmpty
+                                        ? showOwnerdata[0].phone
+                                        : '',
+                                    showCustomerData.isNotEmpty
+                                        ? showOwnerdata[0].location
+                                        : '',
+                                    showCustomerData.isNotEmpty
+                                        ? showOwnerdata[0].relationType
+                                        : '',
+                                    showCustomerData.isNotEmpty
+                                        ? showOwnerdata[0].photo
+                                        : '',
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: const Size(double.infinity, 50),
+                                  backgroundColor: Color(0xff2370B4),
+                                  foregroundColor: Color(0xffFFFFFF),
                                 ),
-                              ),
-                              const SizedBox(width: 152),
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  icon: Image.asset('assets/icons/capture.png'),
-                                  label: const Text('Photo'),
-                                  onPressed: onTapGetImage,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xffBBD3E8),
-                                    foregroundColor: Color(0xff000000),
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(double.infinity, 50),
-                                backgroundColor: Color(0xff2370B4),
-                                foregroundColor: Color(0xffFFFFFF),
-                              ),
-                              child: Text(
-                                'Confirm',
-                                style: TextStyle(fontFamily: 'Poppins-Bold'),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: Row(
-                        children: [
-                          Text('Due:', style: TextStyle(fontSize: 16)),
-                          Text(
-                            '10',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xffE80000),
-                            ),
-                          ),
-                          Image.asset('assets/icons/taka1.png'),
-                          SizedBox(width: 260),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              icon: Image.asset('assets/icons/download.png'),
-                              label: const Text('Report'),
-                              onPressed: onTapGetImage,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xffBBD3E8),
-                                foregroundColor: Color(0xff000000),
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
+                                child: Text(
+                                  'Confirm',
+                                  style: TextStyle(fontFamily: 'Poppins-Bold'),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 5),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * .45,
-
-                      // child: StreamBuilder<QuerySnapshot>(
-                      //   stream:
-                      //       FirebaseFirestore.instance
-                      //           .collection('entries')
-                      //           .snapshots(),
-                      //   builder: (context, snapshot) {
-                      //     if (snapshot.connectionState ==
-                      //         ConnectionState.waiting) {
-                      //       return Center(child: CircularProgressIndicator());
-                      //     }
-                      //     final docs = snapshot.data!.docs;
-                      child: ListView.builder(
-                        itemCount: sortSelectedCustomerData.length,
-                        itemBuilder: (context, index) {
-                          return CustomerSingleTransection(
-                            amount:
-                                sortSelectedCustomerData[index].previousDue
-                                    .toString(),
-                            date: sortSelectedCustomerData[index].date,
-                          );
-                        },
+                      SizedBox(height: 5),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: Row(
+                          children: [
+                            Text(
+                              netAmount >= 0 ? 'Paid:' : 'Due:',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff5B5B5B),
+                              ),
+                            ),
+                            Text(
+                              netAmount.toString(),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color:
+                                    netAmount >= 0 ? Colors.green : Colors.red,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                              height: 10,
+                              child: Image.asset('assets/icons/taka1.png'),
+                            ),
+                            SizedBox(width: 220),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                icon: Image.asset('assets/icons/download.png'),
+                                label: const Text('Report'),
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xffBBD3E8),
+                                  foregroundColor: Color(0xff000000),
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: sortSelectedCustomerData.length,
+                          itemBuilder: (context, index) {
+                            return CustomerSingleTransection(
+                              amount:
+                                  sortSelectedCustomerData[index].previousDue ==
+                                          0
+                                      ? sortSelectedCustomerData[index]
+                                          .paidAmount
+                                          .toString()
+                                      : sortSelectedCustomerData[index]
+                                          .previousDue
+                                          .toString(),
+                              date: sortSelectedCustomerData[index].date,
+                              paymentType:
+                                  sortSelectedCustomerData[index].previousDue ==
+                                          0
+                                      ? 'Paid'
+                                      : 'Due',
+                              color:
+                                  sortSelectedCustomerData[index].previousDue ==
+                                          0
+                                      ? Colors.green
+                                      : Colors.red,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Future<void> _submitForm() async {
-  //   if (dueAmountTEController.text.isEmpty || paidAmountTEController.text.isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("Due or Paid amount are required")),
-  //     );
-  //     return;
-  //   }
+  Future<void> _submitForm(
+    String name,
+    String phone,
+    String location,
+    String type,
+    String photo,
+  ) async {
+    Map<String, dynamic> data = {
+      'name': name,
+      'phone': phone,
+      'location': location,
+      'previous_due':
+          double.tryParse(_previousDueTEController.text.trim()) ?? 0.0,
+      'paid_amount': double.tryParse(paidAmountTEController.text.trim()) ?? 0.0,
+      'photo': photo,
+      'type': type,
+      'selected_date':
+          _selectedDate != null ? Timestamp.fromDate(_selectedDate!) : null,
+    };
 
-  //   String? photoUrl;
-  //   if (_pickedImage != null) {
-  //     List<int> imageBytes = await _pickedImage!.readAsBytes();
-  //     String encodedImage = base64Encode(imageBytes);
-  //     photoUrl = encodedImage;
-  //   }
+    try {
+      await FirebaseFirestore.instance.collection('entries1').add(data);
 
-  //   String type = _tabController.index == 0 ? 'Customer' : 'Supplier';
-  //   String location = _locationTEController.text.trim();
-
-  //   Map<String, dynamic> data = {
-  //     'name': _nameTEController.text.trim(),
-  //     'phone': _phoneTEController.text.trim(),
-  //     'location': location,
-  //     'previous_due':
-  //         double.tryParse(_previousDueTEController.text.trim()) ?? 0.0,
-  //     'photo': photoUrl,
-  //     'type': type,
-  //     'selected_date':
-  //         _selectedDate != null ? Timestamp.fromDate(_selectedDate!) : null,
-  //   };
-
-  //   try {
-  //     await FirebaseFirestore.instance.collection('entries').add(data);
-
-  //     showShackBarMessenger(context, "Entry added successfully", true);
-  //     Navigator.of(context).pop();
-  //   } catch (e) {
-  //     showShackBarMessenger(context, "Failed to add entry: $e", false);
-  //   }
-  // }
+      showShackBarMessenger(context, "Entry added successfully", true);
+      Navigator.of(context).pop();
+    } catch (e) {
+      showShackBarMessenger(context, "Failed to add entry: $e", false);
+    }
+  }
 
   Future<void> onTapGetImage() async {
     XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -468,9 +537,13 @@ class CustomerSingleTransection extends StatelessWidget {
     super.key,
     required this.date,
     required this.amount,
+    required this.paymentType,
+    required this.color,
   });
   final DateTime date;
   final String amount;
+  final String paymentType;
+  final Color color;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -485,7 +558,7 @@ class CustomerSingleTransection extends StatelessWidget {
                 style: TextStyle(color: Color(0xff5B5B5B)),
               ),
               SizedBox(width: 16),
-              Text('Due', style: TextStyle(color: Color(0xffE80000))),
+              Text(paymentType, style: TextStyle(color: color)),
               SizedBox(width: 32),
               Image.asset('assets/icons/taka.png', color: Color(0xff5B5B5B)),
               SizedBox(width: 5),
@@ -511,27 +584,3 @@ class CustomerSingleTransection extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-// CustomerSingleTransection(),
-//                   CustomerSingleTransection(),
-//                   CustomerSingleTransection(),
-//                   CustomerSingleTransection(),
-//                   CustomerSingleTransection(),
-//                   CustomerSingleTransection(),
-
-
-// Expanded(
-//                     child: ListView.builder(
-//                       itemCount: 10,
-//                       itemBuilder: (context, index) {
-//                         return CustomerSingleTransection();
-//                       },
-//                     ),
-//                   ),

@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sanchoy/firebase_options.dart';
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
 class AddCustomerSupplierPage extends StatefulWidget {
@@ -28,86 +26,78 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
   XFile? _pickedImage;
   DateTime? _selectedDate;
 
-  FirebaseApp? _secondaryApp;
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _initializeSecondaryApp();
-  }
-
-  Future<void> _initializeSecondaryApp() async {
-    _secondaryApp = await Firebase.initializeApp(
-      name: 'SecondaryApp',
-      options: DefaultFirebaseOptions.secondaryFirebaseOptions,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Form(
-        key: _key,
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Container(
-                height: double.infinity,
-                decoration: const BoxDecoration(color: Color(0xff2370B4)),
-              ),
-              Positioned(
-                top: 20,
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Image.asset(
-                        'assets/icons/Success Icon.png',
-                        color: Colors.white,
-                      ),
-                    ),
-                    const Text(
-                      'Add Customer/Supplier',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ],
+      body: SafeArea(
+        child: Form(
+          key: _key,
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Container(
+                  height: double.infinity,
+                  decoration: const BoxDecoration(color: Color(0xff2370B4)),
                 ),
-              ),
-              Positioned(
-                top: 90,
-                right: 0,
-                left: 0,
-                child: Container(
-                  height: 850 - 100,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffE9F1F8),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
+                Positioned(
+                  top: 20,
+                  child: Row(
                     children: [
-                      TabBar(
-                        controller: _tabController,
-                        labelColor: Colors.black,
-                        indicatorColor: Colors.blue,
-                        tabs: const [
-                          Tab(text: 'Customer'),
-                          Tab(text: 'Supplier'),
-                        ],
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                          controller: _tabController,
-                          children: [_buildForm(), _buildForm()],
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Image.asset(
+                          'assets/icons/Success Icon.png',
+                          color: Colors.white,
                         ),
+                      ),
+                      const Text(
+                        'Add Customer/Supplier',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+                Positioned(
+                  top: 90,
+                  right: 0,
+                  left: 0,
+                  child: Container(
+                    height: 850 - 100,
+                    decoration: BoxDecoration(
+                      color: const Color(0xffE9F1F8),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      children: [
+                        TabBar(
+                          controller: _tabController,
+                          labelColor: Colors.black,
+                          indicatorColor: Colors.blue,
+                          tabs: const [
+                            Tab(text: 'Customer'),
+                            Tab(text: 'Supplier'),
+                          ],
+                        ),
+                        Expanded(
+                          child: TabBarView(
+                            controller: _tabController,
+                            children: [_buildForm(), _buildForm()],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -304,6 +294,8 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
       'location': location,
       'previous_due':
           double.tryParse(_previousDueTEController.text.trim()) ?? 0.0,
+      'paid_amount': 0.0,
+
       'photo': photoUrl,
       'type': type,
       'selected_date':
@@ -311,39 +303,7 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
     };
 
     try {
-      await FirebaseFirestore.instance.collection('entries').add(data);
-
-      if (location.toLowerCase() == "dhaka") {
-        if (_secondaryApp == null) {
-          showShackBarMessenger(
-            context,
-            "Secondary Firebase not initialized",
-            false,
-          );
-          return;
-        }
-
-        await FirebaseFirestore.instanceFor(
-          app: _secondaryApp!,
-        ).collection('entries').add(data);
-      }
-
-      if (location.toLowerCase() == "rajshahi") {
-        await FirebaseFirestore.instanceFor(
-          app: _secondaryApp!,
-        ).collection('entries1').add(data);
-      }
-
-      if (location.toLowerCase() == "barishal") {
-        await FirebaseFirestore.instanceFor(
-          app: _secondaryApp!,
-        ).collection('entries2').add(data);
-      }
-      if (location.toLowerCase() == "rangpur") {
-        await FirebaseFirestore.instanceFor(
-          app: _secondaryApp!,
-        ).collection('entries4').add(data);
-      }
+      await FirebaseFirestore.instance.collection('entries1').add(data);
 
       showShackBarMessenger(context, "Entry added successfully", true);
       Navigator.of(context).pop();

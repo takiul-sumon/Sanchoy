@@ -6,7 +6,9 @@ class Showcustomersuppliermodel {
   final String name;
   final String phone;
   final String photo;
-  final int previousDue;
+  final double previousDue;
+  final double paidAmount;
+
   final DateTime date;
   final String relationType;
 
@@ -16,6 +18,7 @@ class Showcustomersuppliermodel {
     required this.name,
     required this.photo,
     required this.previousDue,
+    required this.paidAmount,
     required this.date,
     required this.phone,
     required this.relationType,
@@ -30,8 +33,10 @@ class Showcustomersuppliermodel {
       location: jsonData['location'] ?? '',
       name: jsonData['name'] ?? '',
       photo: jsonData['photo'] ?? '',
-      previousDue: (jsonData['previous_due'] ?? 0).toInt(),
-      date: (jsonData['selected_date'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      previousDue: (jsonData['previous_due'] ?? 0).toDouble(),
+      paidAmount: (jsonData['paid_amount'] ?? 0).toDouble(),
+      date:
+          (jsonData['selected_date'] as Timestamp?)?.toDate() ?? DateTime.now(),
       phone: jsonData['phone'] ?? '',
       relationType: jsonData['type'] ?? '',
     );

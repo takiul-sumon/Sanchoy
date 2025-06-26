@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:sanchoy/ui/controller/Login_controller.dart';
 import 'package:sanchoy/ui/screans/MainButtomNavScreen.dart';
 import 'package:sanchoy/ui/screans/SignUpScrean.dart';
+import 'package:sanchoy/ui/screans/bottom_navigation_bar.dart';
 import 'package:sanchoy/ui/screans/forgetPasswordVerificationWithEmail.dart';
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
@@ -266,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) {
-            return Mainbuttomnavscreen();
+            return BottomNaviationBar();
           },
         ),
         (predicate) => false,
