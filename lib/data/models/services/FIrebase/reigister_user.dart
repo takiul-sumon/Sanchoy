@@ -9,14 +9,11 @@ Future<void> registerUser({
   required String mobile,
 }) async {
   try {
-    // 1. Register user with email and password
     UserCredential userCred = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
 
-    // 2. Send email verification (OTP-style link)
     await userCred.user!.sendEmailVerification();
 
-    // 3. Save additional info in Firestore
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userCred.user!.uid)

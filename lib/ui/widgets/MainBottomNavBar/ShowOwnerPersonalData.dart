@@ -7,10 +7,12 @@ class ShowOwnerPersonalData extends StatelessWidget {
     super.key,
     required this.showOwnerdata,
     required this.date,
+    required this.ontap,
   });
 
   final List<Showownermodel> showOwnerdata;
   final DateTime date;
+  final VoidCallback ontap;
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +23,17 @@ class ShowOwnerPersonalData extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              showOwnerdata.isNotEmpty
-                  ? '${showOwnerdata[0].firstName} ${showOwnerdata[0].lastName}'
-                  : '',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            GestureDetector(
+              onTap: ontap,
+              child: Text(
+                showOwnerdata.isNotEmpty
+                    ? '${showOwnerdata[0].firstName} ${showOwnerdata[0].lastName}'
+                    : '',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             Text(
@@ -48,8 +53,7 @@ class ShowOwnerPersonalData extends StatelessWidget {
             IconButton(
               onPressed: () {},
               color: Colors.white,
-              icon: Image.asset(
-                  'assets/icons/Notification Icon Container.png'),
+              icon: Image.asset('assets/icons/Notification Icon Container.png'),
             ),
           ],
         ),

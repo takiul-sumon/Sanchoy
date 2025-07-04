@@ -5,8 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
-import 'package:sanchoy/ui/screans/MainButtomNavScreen.dart';
+import 'package:sanchoy/ui/screans/bottom_navigation_bar.dart';
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class CustomerDetailsPage extends StatefulWidget {
   final String customerid;
@@ -103,6 +106,79 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
     setState(() {});
   }
 
+
+Future<void> generatePdfReport({
+  required BuildContext context,
+  required String userName,
+  required String userPhone,
+  required List<Map<String, dynamic>> transactions,
+}) async {
+  final pdf = pw.Document();
+
+  pdf.addPage(
+    pw.MultiPage(
+      build: (pw.Context context) => [
+        pw.Text('Customer Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+        pw.SizedBox(height: 20),
+        pw.Text('Name: $userName', style: pw.TextStyle(fontSize: 16)),
+        pw.Text('Phone: $userPhone', style: pw.TextStyle(fontSize: 16)),
+        pw.SizedBox(height: 20),
+        pw.Text('Transactions:', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+        pw.SizedBox(height: 10),
+        ...transactions.map((entry) {
+          final String date = entry['date'] ?? 'N/A';
+          final String paid = (entry['paidAmount'] ?? 0) != 0 ? 'Paid: ${entry['paidAmount']}' : '';
+          final String due = (entry['previousDue'] ?? 0) != 0 ? 'Due: ${entry['previousDue']}' : '';
+          final String description = entry['description'] ?? '';
+          return pw.Container(
+            margin: const pw.EdgeInsets.only(bottom: 8),
+            child: pw.Text(
+              'Date: $date | $paid $due | $description',
+              style: pw.TextStyle(fontSize: 14),
+            ),
+          );
+        }).toList(),
+      ],
+    ),
+  );
+
+  await Printing.layoutPdf(
+    onLayout: (PdfPageFormat format) async => pdf.save(),
+  );
+}
+
+
+
+  Future<void> deleteCustomerAndRelatedEntries() async {
+    try {
+      // Delete all transactions related to the customer
+      final transactionsSnapshot =
+          await FirebaseFirestore.instance
+              .collection('transactions')
+              .where('customerId', isEqualTo: widget.customerid)
+              .get();
+
+      for (var doc in transactionsSnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      // Delete the customer document
+      await FirebaseFirestore.instance
+          .collection('entries1')
+          .doc(widget.customerid)
+          .delete();
+
+      // Show success message
+      showShackBarMessenger(context, "Customer and all transactions deleted.");
+
+      // Navigate back
+      Navigator.of(context).pop();
+    } catch (e) {
+      print('Error deleting customer: $e');
+      showShackBarMessenger(context, "Error deleting customer.", true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,7 +200,7 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                             builder: (context) {
-                              return Mainbuttomnavscreen();
+                              return BottomNaviationBar();
                             },
                           ),
                         );
@@ -192,22 +268,7 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
                             ),
                           ),
                           Row(
-                            // crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              // SizedBox(
-                              //   height: 27,
-                              //   width: 125,
-                              //   child: Column(
-                              //     // mainAxisAlignment: MainAxisAlignment.start,
-                              //     // crossAxisAlignment: CrossAxisAlignment.start,
-                              //     children: [
-                              //       TextButton(
-                              //         onPressed: () {},
-                              //         child: Text('Delete'),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
                               TextButton(
                                 onPressed: () {
                                   showDialog(
@@ -216,13 +277,135 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
                                       return Center(
                                         child: Container(
                                           color: Color(0xffE9F1F8),
-                                          height: 100,
+                                          height: 150,
                                           width: 390,
                                           child: Column(
                                             children: [
+                                              Icon(
+                                                Icons.warning_outlined,
+                                                color: Color(0xff2388FF),
+                                                size: 25,
+                                              ),
+                                              SizedBox(height: 5),
                                               Text(
                                                 'Delete Customer',
-                                                style: TextStyle(fontSize: 18),
+                                                style: TextStyle(
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: Color(0xff0F2F4C),
+                                                ),
+                                              ),
+                                              SizedBox(height: 10),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Are you sure you want to delete ',
+                                                    style: TextStyle(
+                                                      color: Color(0xff0F2F4C),
+                                                      decoration:
+                                                          TextDecoration.none,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      letterSpacing: 1,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 5),
+
+                                                  Text(
+                                                    showOwnerdata.isNotEmpty
+                                                        ? showOwnerdata[0].name
+                                                        : '',
+                                                    style: TextStyle(
+                                                      color: Color(0xff0F2F4C),
+                                                      decoration:
+                                                          TextDecoration.none,
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    '? ',
+                                                    style: TextStyle(
+                                                      decoration:
+                                                          TextDecoration.none,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      letterSpacing: 1,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 5),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  TextButton(
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          WidgetStateProperty.all<
+                                                            Color
+                                                          >(Color(0xffBBD3E8)),
+                                                      shape: WidgetStateProperty.all(
+                                                        RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                12,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    },
+                                                    child: Text(
+                                                      'Cancle',
+                                                      style: TextStyle(
+                                                        color: Color(
+                                                          0xff0F2F4C,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  TextButton(
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          WidgetStateProperty.all<
+                                                            Color
+                                                          >(Colors.red),
+                                                      shape: WidgetStateProperty.all(
+                                                        RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                12,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    onPressed: () async {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                      await deleteCustomerAndRelatedEntries();
+                                                    },
+                                                    child: Text(
+                                                      'Delete',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
@@ -419,7 +602,19 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
                               child: ElevatedButton.icon(
                                 icon: Image.asset('assets/icons/download.png'),
                                 label: const Text('Report'),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  await generatePdfReport(
+        context: context,
+        userName: showOwnerdata[0].name ?? '',
+        userPhone: showOwnerdata[0].phone ?? '',
+        transactions: sortSelectedCustomerData.map((entry) => {
+          'date': entry.date,
+          'paidAmount': entry.paidAmount,
+          'previousDue': entry.previousDue,
+          'description': entry.phone,
+        }).toList(),
+      );
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xffBBD3E8),
                                   foregroundColor: Color(0xff000000),

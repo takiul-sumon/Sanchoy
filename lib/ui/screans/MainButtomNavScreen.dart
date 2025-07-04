@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
 import 'package:sanchoy/data/models/ShowOwnerModel.dart';
 import 'package:sanchoy/ui/screans/Customer_Deatils.dart';
+import 'package:sanchoy/ui/screans/Login_screan.dart';
 import 'package:sanchoy/ui/screans/add_curstomer.dart';
 import 'package:sanchoy/ui/widgets/MainBottomNavBar/CustomerListView.dart';
 import 'package:sanchoy/ui/widgets/MainBottomNavBar/SearchBarSection.dart';
@@ -25,6 +26,7 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
   double supplierDue = 0;
   TextEditingController searchCustomerTEController = TextEditingController();
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String get searchTerm => searchCustomerTEController.text.trim();
 
@@ -33,6 +35,73 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        child: Column(
+          children: [
+            SizedBox(height: 50),
+            Container(
+              height: 62,
+              width: 240,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(7),
+                color: Color(0xff9ABDDD),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          child: Image.asset('assets/images/Ellipse 1.png'),
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              showOwnerdata.isNotEmpty
+                                  ? '${showOwnerdata[0].firstName} ${showOwnerdata[0].lastName}'
+                                  : '',
+                              style: TextStyle(
+                                color: Color(0xff2370B4),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              showOwnerdata.isNotEmpty
+                                  ? showOwnerdata[0].mobileNumber
+                                  : '',
+                              style: TextStyle(
+                                color: Color(0xff5B5B5B),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return LoginScreen();
+                    },
+                  ),
+                );
+              },
+              child: Text('Logout'),
+            ),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: Form(
           key: _key,
@@ -45,6 +114,9 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
                 padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
                 child: ShowOwnerPersonalData(
                   showOwnerdata: showOwnerdata,
+                  ontap: () {
+                    _scaffoldKey.currentState?.openDrawer();
+                  },
                   date: date,
                 ),
               ),
@@ -131,6 +203,9 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
   void initState() {
     fetchOwnerdata();
     calculateDues();
+    searchCustomerTEController.addListener(() {
+      setState(() {});
+    });
     super.initState();
   }
 

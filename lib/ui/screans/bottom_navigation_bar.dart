@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sanchoy/ui/screans/MainButtomNavScreen.dart';
-import 'package:sanchoy/ui/screans/side_menu.dart';
 
 class BottomNaviationBar extends StatefulWidget {
   const BottomNaviationBar({super.key});
@@ -16,7 +15,7 @@ class _BottomNaviationBarState extends State<BottomNaviationBar> {
     const Mainbuttomnavscreen(),
     const Mainbuttomnavscreen(),
     const Mainbuttomnavscreen(),
-    const Sidemenu(),
+    const Mainbuttomnavscreen(),
   ];
 
   // CustomerDetailsPage(customerid: '2sVdvNslmB8olcKLiQHA')
@@ -25,21 +24,34 @@ class _BottomNaviationBarState extends State<BottomNaviationBar> {
     return Scaffold(
       body: pages[pageIndex],
       bottomNavigationBar: NavigationBar(
+        selectedIndex: 0,
+        onDestinationSelected: (value) {},
         destinations: [
           NavigationDestination(
-            icon: Image.asset('assets/icons/Home.png'),
-            label: 'Transecion',
+            icon: Image.asset('assets/icons/Home.png', height: 20, width: 20),
+            label: 'Transection',
           ),
           NavigationDestination(
-            icon: Image.asset('assets/icons/Default Icon.png'),
+            icon: Image.asset(
+              'assets/icons/cashBox.png',
+              height: 20,
+              width: 20,
+            ),
             label: 'CashBox',
           ),
           NavigationDestination(
-            icon: Image.asset('assets/icons/Vector (1).png'),
+            icon: Image.asset(
+              'assets/icons/taka_green.png',
+              color: Colors.black38,
+            ),
             label: 'Report',
           ),
           NavigationDestination(
-            icon: Image.asset('assets/icons/Vector (2).png'),
+            icon: Image.asset(
+              'assets/icons/Description.png',
+              height: 20,
+              width: 20,
+            ),
             label: 'Menu',
           ),
         ],
