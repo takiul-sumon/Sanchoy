@@ -7,6 +7,7 @@ import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
 class SignUpScrean extends StatefulWidget {
   const SignUpScrean({super.key});
+  static final String name = 'sign-up-screen';
 
   @override
   State<SignUpScrean> createState() => _SignUpScreanState();

@@ -3,7 +3,7 @@ import 'package:sanchoy/ui/screans/MainButtomNavScreen.dart';
 
 class BottomNaviationBar extends StatefulWidget {
   const BottomNaviationBar({super.key});
-
+  static final String name = 'main-buttom-nav-bar';
   @override
   State<BottomNaviationBar> createState() => _BottomNaviationBarState();
 }

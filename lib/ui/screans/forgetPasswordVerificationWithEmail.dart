@@ -5,6 +5,7 @@ import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
 class ForgetPasswordWithEmail extends StatefulWidget {
   const ForgetPasswordWithEmail({super.key});
+  static final String name = 'forget-password-screen';
 
   @override
   State<ForgetPasswordWithEmail> createState() =>
@@ -104,10 +105,7 @@ class _ForgetPasswordWithEmailState extends State<ForgetPasswordWithEmail> {
   }
 
   void _onTapSignIn() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
+    Navigator.pushNamed(context, LoginScreen.name);
   }
 
   Future<void> _sendPasswordResetEmail() async {
@@ -119,6 +117,10 @@ class _ForgetPasswordWithEmailState extends State<ForgetPasswordWithEmail> {
       try {
         await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
         showShackBarMessenger(context, "Reset link sent to $email", false);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
       } on FirebaseAuthException catch (e) {
         showShackBarMessenger(context, e.message ?? "An error occurred", true);
       } catch (e) {

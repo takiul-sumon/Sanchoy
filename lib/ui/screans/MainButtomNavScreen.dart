@@ -5,7 +5,7 @@ import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
 import 'package:sanchoy/data/models/ShowOwnerModel.dart';
 import 'package:sanchoy/ui/screans/Customer_Deatils.dart';
 import 'package:sanchoy/ui/screans/Login_screan.dart';
-import 'package:sanchoy/ui/screans/add_curstomer.dart';
+import 'package:sanchoy/ui/controller/add_curstomer.dart';
 import 'package:sanchoy/ui/widgets/MainBottomNavBar/CustomerListView.dart';
 import 'package:sanchoy/ui/widgets/MainBottomNavBar/SearchBarSection.dart';
 import 'package:sanchoy/ui/widgets/MainBottomNavBar/ShowOwnerPersonalData.dart';
@@ -13,6 +13,7 @@ import 'package:sanchoy/ui/widgets/MainBottomNavBar/TransectionSummaryOfStackHol
 
 class Mainbuttomnavscreen extends StatefulWidget {
   const Mainbuttomnavscreen({super.key});
+  static final String name = 'main-buttom-nav-screen';
 
   @override
   State<Mainbuttomnavscreen> createState() => _MainbuttomnavscreenState();

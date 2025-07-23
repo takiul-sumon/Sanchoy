@@ -9,6 +9,7 @@ import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+  static final String name = 'login-screen';
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -109,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-            
+
                   TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Email',
@@ -127,9 +128,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-            
+
                   const SizedBox(height: 10),
-            
+
                   TextFormField(
                     obscureText: true,
                     decoration: InputDecoration(
@@ -148,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-            
+
                   // const SizedBox(height: 5),
                   Align(
                     alignment: Alignment.topRight,
@@ -165,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 15),
-            
+
                   ElevatedButton(
                     onPressed: onTapSignInButton,
                     child: Text(
@@ -178,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-            
+
                   // Sign Up Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -207,11 +208,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-            
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(height: 1, width: 140, color: Color(0xff0F2F4C)),
+                      Container(
+                        height: 1,
+                        width: 140,
+                        color: Color(0xff0F2F4C),
+                      ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                         child: Text(
@@ -223,11 +228,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      Container(height: 1, width: 140, color: Color(0xff0F2F4C)),
+                      Container(
+                        height: 1,
+                        width: 140,
+                        color: Color(0xff0F2F4C),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
-            
+
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
@@ -278,23 +287,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Forget Password Screen Navigation
   onTapForgetPassword() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) {
-          return ForgetPasswordWithEmail();
-        },
-      ),
-    );
+    Navigator.pushNamed(context, ForgetPasswordWithEmail.name);
   }
 
   // Navigate to Sign Up Screen
   onTapSignUpPassword() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) {
-          return SignUpScrean();
-        },
-      ),
-    );
+    Navigator.pushNamed(context, SignUpScrean.name);
   }
 }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sanchoy/assets_paths.dart';
 import 'package:sanchoy/ui/screans/Login_screan.dart';
 
 class SplashScrean extends StatefulWidget {
   const SplashScrean({super.key});
+  static final String name = 'splash-screen';
 
   @override
   State<SplashScrean> createState() => _SplashScreanState();
@@ -16,17 +19,19 @@ class _SplashScreanState extends State<SplashScrean> {
   }
 
   Future<void> _movetoNext() async {
-    await Future.delayed(Duration(seconds: 2));
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-    );
+    await Future.delayed(Duration(seconds: 5));
+    Navigator.pushNamed(context, LoginScreen.name);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Image.asset('assets/images/splash_screan.png', fit: BoxFit.contain),
+      body: Image.asset(
+        AssetsPaths.splash_screen,
+        fit: BoxFit.cover,
+        height: 917.h,
+        width: 412.w,
+      ),
     );
   }
 }

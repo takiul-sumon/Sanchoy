@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:sanchoy/ui/controller/controller_binder.dart';
+import 'package:sanchoy/app_routes.dart';
+import 'package:sanchoy/app_theme.dart';
+import 'package:sanchoy/controller_binder.dart';
 import 'package:sanchoy/ui/screans/splash_screan.dart';
 
 class Sanchoy extends StatefulWidget {
@@ -15,40 +18,19 @@ class Sanchoy extends StatefulWidget {
 class _SanchoyState extends State<Sanchoy> {
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      navigatorKey: Sanchoy.navigatorKey,
-      initialBinding: ControllerBinder(),
-
-      theme: ThemeData(
-        textTheme: TextTheme(
-          bodyMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.blue,
-              strokeAlign: 5,
-              width: 2,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.green, width: 2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: Colors.blue,
-          ),
-        ),
-      ),
-      home: SplashScrean(),
+    return ScreenUtilInit(
+      designSize: Size(412, 917),
+      splitScreenMode: true,
+      builder: (context, child) {
+        return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          navigatorKey: Sanchoy.navigatorKey,
+          initialBinding: ControllerBinder(),
+          theme: AppTheme.lightThemeData,
+          onGenerateRoute: AppRoutes.getRoute,
+          initialRoute: SplashScrean.name,
+        );
+      },
     );
   }
 }
