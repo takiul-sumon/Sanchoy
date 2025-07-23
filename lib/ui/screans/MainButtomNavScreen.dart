@@ -62,7 +62,7 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
                           children: [
                             Text(
                               showOwnerdata.isNotEmpty
-                                  ? '${showOwnerdata[0].firstName} ${showOwnerdata[0].lastName}'
+                                  ? '${showOwnerdata[1].firstName} ${showOwnerdata[1].lastName}'
                                   : '',
                               style: TextStyle(
                                 color: Color(0xff2370B4),
@@ -71,7 +71,7 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
                             ),
                             Text(
                               showOwnerdata.isNotEmpty
-                                  ? showOwnerdata[0].mobileNumber
+                                  ? showOwnerdata[1].mobileNumber
                                   : '',
                               style: TextStyle(
                                 color: Color(0xff5B5B5B),

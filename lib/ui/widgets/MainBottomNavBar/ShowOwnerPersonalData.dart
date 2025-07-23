@@ -27,7 +27,7 @@ class ShowOwnerPersonalData extends StatelessWidget {
               onTap: ontap,
               child: Text(
                 showOwnerdata.isNotEmpty
-                    ? '${showOwnerdata[0].firstName} ${showOwnerdata[0].lastName}'
+                    ? '${showOwnerdata[1].firstName} ${showOwnerdata[1].lastName}'
                     : '',
                 style: const TextStyle(
                   color: Colors.white,
