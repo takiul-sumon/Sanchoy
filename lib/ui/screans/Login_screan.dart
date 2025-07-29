@@ -1,5 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:sanchoy/ui/controller/Login_controller.dart';
 import 'package:sanchoy/ui/screans/SignUpScrean.dart';
@@ -34,17 +35,20 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 20),
+                  SizedBox(height: 26.h),
                   Center(
-                    child: Image.asset('assets/images/Group.png', height: 150),
+                    child: Image.asset(
+                      'assets/images/Group.png',
+                      height: 180.h,
+                    ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 26.h),
                   Stack(
                     alignment: Alignment.center,
                     children: [
                       Container(
-                        height: 60,
-                        width: 250,
+                        height: 57.h,
+                        width: 272.h,
                         // color: Colors.amber,
                         decoration: BoxDecoration(
                           color: Color(0xffBBD3E8),
@@ -109,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 26.h),
 
                   TextFormField(
                     decoration: InputDecoration(
@@ -129,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
 
-                  const SizedBox(height: 10),
+                  SizedBox(height: 12.h),
 
                   TextFormField(
                     obscureText: true,
@@ -165,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  SizedBox(height: 10.h),
 
                   ElevatedButton(
                     onPressed: onTapSignInButton,
@@ -178,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 12.h),
 
                   // Sign Up Link
                   Row(
@@ -235,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 12.h),
 
                   ElevatedButton(
                     onPressed: () {},

@@ -162,7 +162,6 @@ Future<void> generatePdfReport({
         await doc.reference.delete();
       }
 
-      // Delete the customer document
       await FirebaseFirestore.instance
           .collection('entries1')
           .doc(widget.customerid)

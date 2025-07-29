@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
 import 'package:sanchoy/data/models/ShowOwnerModel.dart';
+import 'package:sanchoy/data/models/app_user.dart';
 import 'package:sanchoy/ui/screans/Customer_Deatils.dart';
 import 'package:sanchoy/ui/screans/Login_screan.dart';
 import 'package:sanchoy/ui/controller/add_curstomer.dart';
@@ -28,6 +30,8 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
   TextEditingController searchCustomerTEController = TextEditingController();
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  User? user = FirebaseAuth.instance.currentUser;
 
   String get searchTerm => searchCustomerTEController.text.trim();
 
@@ -207,6 +211,11 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
     searchCustomerTEController.addListener(() {
       setState(() {});
     });
+
+    print('uid');
+    print(FirebaseAuth.instance.currentUser!.uid);
+    fetchAppUserData();
+
     super.initState();
   }
 
@@ -220,6 +229,31 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
       showOwnerdata.add(model);
     }
     setState(() {});
+  }
+
+  Future<void> fetchAppUserData() async {
+    String uid = user!.uid;
+    DocumentSnapshot userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    if (userDoc.exists) {
+      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+      String firstName = userData['firstName'];
+      String lastName = userData['lastName'];
+      String email = userData['email'];
+      String mobile = userData['mobile'];
+
+      print("User: $firstName $lastName");
+      print("Email: $email");
+      print("Mobile: $mobile");
+
+      List<AppUser> fetchData = [];
+      final user = AppUser.fromDocumentSnapshot(userDoc);
+
+      fetchData.add(user);
+      print("list");
+      print(user.firstName);
+    }
   }
 
   Future<void> calculateDues() async {

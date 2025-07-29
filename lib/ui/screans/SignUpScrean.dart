@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sanchoy/ui/screans/Login_screan.dart';
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
@@ -36,14 +37,21 @@ class _SignUpScreanState extends State<SignUpScrean> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Center(child: Image.asset('assets/images/sign_up.png')),
-                  SizedBox(height: 10),
+                  SizedBox(height: 26.h),
+
+                  Center(
+                    child: Image.asset(
+                      'assets/images/sign_up.png',
+                      height: 180.h,
+                    ),
+                  ),
+                  SizedBox(height: 26.h),
                   Stack(
                     alignment: Alignment.center,
                     children: [
                       Container(
-                        height: 60,
-                        width: 250,
+                        height: 57.h,
+                        width: 265.h,
 
                         decoration: BoxDecoration(
                           color: Color(0xffBBD3E8),
@@ -108,7 +116,7 @@ class _SignUpScreanState extends State<SignUpScrean> {
                     ],
                   ),
 
-                  const SizedBox(height: 10),
+                  SizedBox(height: 26.h),
 
                   TextFormField(
                     decoration: InputDecoration(
@@ -323,7 +331,6 @@ class _SignUpScreanState extends State<SignUpScrean> {
       // Send email verification
       await userCred.user!.sendEmailVerification();
 
-      // Save additional data to Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCred.user!.uid)
