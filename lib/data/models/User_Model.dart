@@ -6,14 +6,6 @@ class UserModel {
   late final String mobile;
   late final String createdDate;
   late final String photo;
-  // UserModel({
-  //   required this.id,
-  //   required this.email,
-  //   required this.firstName,
-  //   required this.lastName,
-  //   required this.mobile,
-  //   required this.createdDate,
-  // });
 
   UserModel.fromJson(Map<String, dynamic> jsonData) {
     id = jsonData['_id'] ?? '';
