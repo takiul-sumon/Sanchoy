@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sanchoy/ui/screans/MainButtomNavScreen.dart';
+import 'package:sanchoy/ui/screans/main%20bottom%20nav%20screen/MainButtomNavScreen.dart';
 
 class BottomNaviationBar extends StatefulWidget {
   const BottomNaviationBar({super.key});

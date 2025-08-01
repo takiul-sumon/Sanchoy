@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sanchoy/assets_paths.dart';
-import 'package:sanchoy/ui/screans/Login_screan.dart';
+import 'package:sanchoy/app/assets_paths.dart';
+import 'package:sanchoy/ui/screans/login_screan.dart';
 
 class SplashScrean extends StatefulWidget {
   const SplashScrean({super.key});

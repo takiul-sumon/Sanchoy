@@ -3,8 +3,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sanchoy/ui/screans/Login_screan.dart';
-import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
+import 'package:sanchoy/ui/commons/SnackBarMessenger.dart';
+import 'package:sanchoy/ui/screans/login_screan.dart';
 
 class SignUpScrean extends StatefulWidget {
   const SignUpScrean({super.key});

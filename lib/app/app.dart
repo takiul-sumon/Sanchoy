@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:sanchoy/app_routes.dart';
-import 'package:sanchoy/app_theme.dart';
-import 'package:sanchoy/controller_binder.dart';
+import 'package:sanchoy/app/app_routes.dart';
+import 'package:sanchoy/app/app_theme.dart';
+import 'package:sanchoy/app/controller_binder.dart';
 import 'package:sanchoy/ui/screans/splash_screan.dart';
 
 class Sanchoy extends StatefulWidget {

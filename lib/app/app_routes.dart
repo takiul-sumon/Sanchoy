@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sanchoy/ui/screans/Login_screan.dart';
-import 'package:sanchoy/ui/screans/SignUpScrean.dart';
+import 'package:sanchoy/ui/screans/login_screan.dart';
+import 'package:sanchoy/ui/screans/sign_up_screen.dart';
 import 'package:sanchoy/ui/screans/bottom_navigation_bar.dart';
 import 'package:sanchoy/ui/screans/forgetPasswordVerificationWithEmail.dart';
 import 'package:sanchoy/ui/screans/splash_screan.dart';

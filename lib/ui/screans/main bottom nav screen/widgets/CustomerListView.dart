@@ -50,8 +50,11 @@ class CustomerListView extends StatelessWidget {
               : FutureBuilder<QuerySnapshot>(
                 future:
                     FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
                         .collection('entries1')
-                        .where('phone', isEqualTo: searchTerm)
+                        .where('phone', isGreaterThanOrEqualTo: searchTerm)
+                        .where('phone', isLessThan: searchTerm + 'z')
                         .get(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {

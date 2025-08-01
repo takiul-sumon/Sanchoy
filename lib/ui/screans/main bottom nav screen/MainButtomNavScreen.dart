@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
 import 'package:sanchoy/data/models/app_user.dart';
-import 'package:sanchoy/ui/screans/Customer_Deatils.dart';
-import 'package:sanchoy/ui/screans/Login_screan.dart';
-import 'package:sanchoy/ui/controller/add_curstomer.dart';
-import 'package:sanchoy/ui/widgets/MainBottomNavBar/CustomerListView.dart';
-import 'package:sanchoy/ui/widgets/MainBottomNavBar/SearchBarSection.dart';
-import 'package:sanchoy/ui/widgets/MainBottomNavBar/ShowOwnerPersonalData.dart';
-import 'package:sanchoy/ui/widgets/MainBottomNavBar/TransectionSummaryOfStackHolder.dart';
+import 'package:sanchoy/ui/screans/customer_Deatils.dart';
+import 'package:sanchoy/ui/screans/login_screan.dart';
+import 'package:sanchoy/ui/screans/add_curstomer.dart';
+import 'package:sanchoy/ui/screans/main%20bottom%20nav%20screen/widgets/CustomerListView.dart';
+import 'package:sanchoy/ui/screans/main%20bottom%20nav%20screen/widgets/SearchBarSection.dart';
+import 'package:sanchoy/ui/screans/main%20bottom%20nav%20screen/widgets/ShowOwnerPersonalData.dart';
+import 'package:sanchoy/ui/screans/main%20bottom%20nav%20screen/widgets/TransectionSummaryOfStackHolder.dart';
 
 class Mainbuttomnavscreen extends StatefulWidget {
   const Mainbuttomnavscreen({super.key});

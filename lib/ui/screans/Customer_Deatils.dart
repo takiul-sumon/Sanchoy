@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
-import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
+import 'package:sanchoy/ui/commons/SnackBarMessenger.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';

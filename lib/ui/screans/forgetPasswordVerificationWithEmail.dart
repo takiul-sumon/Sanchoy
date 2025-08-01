@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:sanchoy/ui/screans/Login_screan.dart';
-import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
+import 'package:sanchoy/ui/commons/SnackBarMessenger.dart';
+import 'package:sanchoy/ui/screans/login_screan.dart';
 
 class ForgetPasswordWithEmail extends StatefulWidget {
   const ForgetPasswordWithEmail({super.key});
