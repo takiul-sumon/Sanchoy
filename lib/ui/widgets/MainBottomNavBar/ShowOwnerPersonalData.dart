@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sanchoy/data/models/ShowOwnerModel.dart';
+import 'package:sanchoy/data/models/app_user.dart';
 
 class ShowOwnerPersonalData extends StatelessWidget {
   const ShowOwnerPersonalData({
     super.key,
-    required this.showOwnerdata,
+    required this.fetchUserPersonalData,
     required this.date,
     required this.ontap,
   });
 
-  final List<Showownermodel> showOwnerdata;
+ final List<AppUser> fetchUserPersonalData;
   final DateTime date;
   final VoidCallback ontap;
 
@@ -26,8 +26,8 @@ class ShowOwnerPersonalData extends StatelessWidget {
             GestureDetector(
               onTap: ontap,
               child: Text(
-                showOwnerdata.isNotEmpty
-                    ? '${showOwnerdata[1].firstName} ${showOwnerdata[1].lastName}'
+                fetchUserPersonalData.isNotEmpty
+                    ? '${fetchUserPersonalData[0].firstName} ${fetchUserPersonalData[0].lastName}'
                     : '',
                 style: const TextStyle(
                   color: Colors.white,

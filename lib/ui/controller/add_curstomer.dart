@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 
@@ -21,6 +23,7 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
   final TextEditingController _previousDueTEController =
       TextEditingController();
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
+  User? user = FirebaseAuth.instance.currentUser;
 
   final ImagePicker _picker = ImagePicker();
   XFile? _pickedImage;
@@ -46,7 +49,7 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
                   decoration: const BoxDecoration(color: Color(0xff2370B4)),
                 ),
                 Positioned(
-                  top: 20,
+                  top: 44.h,
                   child: Row(
                     children: [
                       IconButton(
@@ -66,11 +69,11 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
                   ),
                 ),
                 Positioned(
-                  top: 90,
+                  top: 108.h,
                   right: 0,
                   left: 0,
                   child: Container(
-                    height: 850 - 100,
+                    height: 809.h,
                     decoration: BoxDecoration(
                       color: const Color(0xffE9F1F8),
                       borderRadius: BorderRadius.circular(15),
@@ -271,6 +274,8 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
   }
 
   Future<void> _submitForm() async {
+    String uid = user!.uid;
+
     if (_nameTEController.text.isEmpty || _phoneTEController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Name and Phone are required")),
@@ -303,7 +308,11 @@ class AddCustomerSupplierPageState extends State<AddCustomerSupplierPage>
     };
 
     try {
-      await FirebaseFirestore.instance.collection('entries1').add(data);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('entries1')
+          .add(data);
 
       showShackBarMessenger(context, "Entry added successfully", true);
       Navigator.of(context).pop();

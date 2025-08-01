@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
-import 'package:sanchoy/data/models/ShowOwnerModel.dart';
 import 'package:sanchoy/data/models/app_user.dart';
 import 'package:sanchoy/ui/screans/Customer_Deatils.dart';
 import 'package:sanchoy/ui/screans/Login_screan.dart';
@@ -23,13 +23,13 @@ class Mainbuttomnavscreen extends StatefulWidget {
 
 class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
   FirebaseFirestore db = FirebaseFirestore.instance;
-  List<Showownermodel> showOwnerdata = [];
   DateTime date = DateTime.now();
   double customerDue = 0;
   double supplierDue = 0;
   TextEditingController searchCustomerTEController = TextEditingController();
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<AppUser> fetchUserPersonalData = [];
 
   User? user = FirebaseAuth.instance.currentUser;
 
@@ -37,76 +37,9 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       key: _scaffoldKey,
-      drawer: Drawer(
-        child: Column(
-          children: [
-            SizedBox(height: 50),
-            Container(
-              height: 62,
-              width: 240,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(7),
-                color: Color(0xff9ABDDD),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          child: Image.asset('assets/images/Ellipse 1.png'),
-                        ),
-                        SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              showOwnerdata.isNotEmpty
-                                  ? '${showOwnerdata[1].firstName} ${showOwnerdata[1].lastName}'
-                                  : '',
-                              style: TextStyle(
-                                color: Color(0xff2370B4),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            Text(
-                              showOwnerdata.isNotEmpty
-                                  ? showOwnerdata[1].mobileNumber
-                                  : '',
-                              style: TextStyle(
-                                color: Color(0xff5B5B5B),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return LoginScreen();
-                    },
-                  ),
-                );
-              },
-              child: Text('Logout'),
-            ),
-          ],
-        ),
-      ),
+      drawer: SideDrawer(fetchUserPersonalData: fetchUserPersonalData),
       body: SafeArea(
         child: Form(
           key: _key,
@@ -114,11 +47,12 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
             alignment: Alignment.centerLeft,
             children: [
               Container(
-                height: screenHeight,
+                height: 917.h,
+                width: 412.w,
                 color: const Color(0xff2370B4),
                 padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
                 child: ShowOwnerPersonalData(
-                  showOwnerdata: showOwnerdata,
+                  fetchUserPersonalData: fetchUserPersonalData,
                   ontap: () {
                     _scaffoldKey.currentState?.openDrawer();
                   },
@@ -126,11 +60,13 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
                 ),
               ),
               Positioned(
-                top: 100,
+                top: 100.h,
                 right: 0,
                 left: 0,
                 bottom: 0,
                 child: Container(
+                  height: 758.h,
+                  width: 412.w,
                   decoration: const BoxDecoration(
                     color: Color(0xffE9F1F8),
                     borderRadius: BorderRadius.vertical(
@@ -206,29 +142,14 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
 
   @override
   void initState() {
-    fetchOwnerdata();
     calculateDues();
     searchCustomerTEController.addListener(() {
       setState(() {});
     });
 
-    print('uid');
-    print(FirebaseAuth.instance.currentUser!.uid);
     fetchAppUserData();
 
     super.initState();
-  }
-
-  Future<void> fetchOwnerdata() async {
-    final QuerySnapshot snapshot = await db.collection('users').get();
-    for (QueryDocumentSnapshot doc in snapshot.docs) {
-      Showownermodel model = Showownermodel.formJson(
-        doc.id,
-        doc.data() as Map<String, dynamic>,
-      );
-      showOwnerdata.add(model);
-    }
-    setState(() {});
   }
 
   Future<void> fetchAppUserData() async {
@@ -237,27 +158,18 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
     if (userDoc.exists) {
-      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-      String firstName = userData['firstName'];
-      String lastName = userData['lastName'];
-      String email = userData['email'];
-      String mobile = userData['mobile'];
-
-      print("User: $firstName $lastName");
-      print("Email: $email");
-      print("Mobile: $mobile");
-
-      List<AppUser> fetchData = [];
       final user = AppUser.fromDocumentSnapshot(userDoc);
-
-      fetchData.add(user);
-      print("list");
-      print(user.firstName);
+      fetchUserPersonalData.add(user);
     }
   }
 
   Future<void> calculateDues() async {
-    final QuerySnapshot snapshot = await db.collection('entries1').get();
+    final QuerySnapshot snapshot =
+        await db
+            .collection('users')
+            .doc(user!.uid)
+            .collection('entries1')
+            .get();
     customerDue = 0;
     supplierDue = 0;
     for (QueryDocumentSnapshot doc in snapshot.docs) {
@@ -287,5 +199,75 @@ class _MainbuttomnavscreenState extends State<Mainbuttomnavscreen> {
 
   bool _shouldShowImage(String? photo) {
     return photo != null && photo.isNotEmpty;
+  }
+}
+
+class SideDrawer extends StatelessWidget {
+  const SideDrawer({super.key, required this.fetchUserPersonalData});
+
+  final List<AppUser> fetchUserPersonalData;
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Column(
+        children: [
+          SizedBox(height: 50),
+          Container(
+            height: 62,
+            width: 240,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(7),
+              color: Color(0xff9ABDDD),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        child: Image.asset('assets/images/Ellipse 1.png'),
+                      ),
+                      SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            fetchUserPersonalData.isNotEmpty
+                                ? '${fetchUserPersonalData[0].firstName} ${fetchUserPersonalData[0].lastName}'
+                                : '',
+                            style: TextStyle(
+                              color: Color(0xff2370B4),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            fetchUserPersonalData.isNotEmpty
+                                ? fetchUserPersonalData[0].mobile
+                                : '',
+                            style: TextStyle(
+                              color: Color(0xff5B5B5B),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, LoginScreen.name);
+            },
+            child: Text('Logout'),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sanchoy/data/models/ShowCustomerSupplierModel.dart';
-import 'package:sanchoy/ui/screans/bottom_navigation_bar.dart';
 import 'package:sanchoy/ui/widgets/SnackBarMessenger.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -48,7 +48,12 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
     setState(() {});
     try {
       final DocumentSnapshot doc =
-          await db.collection('entries1').doc(widget.customerid).get();
+          await db
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection('entries1')
+              .doc(widget.customerid)
+              .get();
       if (doc.exists) {
         final Showcustomersuppliermodel showownermodel =
             Showcustomersuppliermodel.fromJson(
@@ -68,7 +73,12 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
 
   Future<void> fetchCustomerdata() async {
     final DocumentSnapshot doc =
-        await db.collection('entries1').doc(widget.customerid).get();
+        await db
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection('entries1')
+            .doc(widget.customerid)
+            .get();
     final Showcustomersuppliermodel showownermodel =
         Showcustomersuppliermodel.fromJson(
           doc.id,
@@ -77,9 +87,12 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
     showOwnerdata.clear();
     showOwnerdata.add(showownermodel);
 
-    //Different Part
-
-    final QuerySnapshot snapshot = await db.collection('entries1').get();
+    final QuerySnapshot snapshot =
+        await db
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection('entries1')
+            .get();
     for (QueryDocumentSnapshot doc in snapshot.docs) {
       Showcustomersuppliermodel showcustomermodel =
           Showcustomersuppliermodel.fromJson(
@@ -106,48 +119,64 @@ class CustomerDetailsPageState extends State<CustomerDetailsPage>
     setState(() {});
   }
 
+  Future<void> generatePdfReport({
+    required BuildContext context,
+    required String userName,
+    required String userPhone,
+    required List<Map<String, dynamic>> transactions,
+  }) async {
+    final pdf = pw.Document();
 
-Future<void> generatePdfReport({
-  required BuildContext context,
-  required String userName,
-  required String userPhone,
-  required List<Map<String, dynamic>> transactions,
-}) async {
-  final pdf = pw.Document();
+    pdf.addPage(
+      pw.MultiPage(
+        build:
+            (pw.Context context) => [
+              pw.Text(
+                'Customer Report',
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Text('Name: $userName', style: pw.TextStyle(fontSize: 16)),
+              pw.Text('Phone: $userPhone', style: pw.TextStyle(fontSize: 16)),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Transactions:',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              ...transactions.map((entry) {
+                final String date = entry['date'] ?? 'N/A';
+                final String paid =
+                    (entry['paidAmount'] ?? 0) != 0
+                        ? 'Paid: ${entry['paidAmount']}'
+                        : '';
+                final String due =
+                    (entry['previousDue'] ?? 0) != 0
+                        ? 'Due: ${entry['previousDue']}'
+                        : '';
+                final String description = entry['description'] ?? '';
+                return pw.Container(
+                  margin: const pw.EdgeInsets.only(bottom: 8),
+                  child: pw.Text(
+                    'Date: $date | $paid $due | $description',
+                    style: pw.TextStyle(fontSize: 14),
+                  ),
+                );
+              }).toList(),
+            ],
+      ),
+    );
 
-  pdf.addPage(
-    pw.MultiPage(
-      build: (pw.Context context) => [
-        pw.Text('Customer Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
-        pw.SizedBox(height: 20),
-        pw.Text('Name: $userName', style: pw.TextStyle(fontSize: 16)),
-        pw.Text('Phone: $userPhone', style: pw.TextStyle(fontSize: 16)),
-        pw.SizedBox(height: 20),
-        pw.Text('Transactions:', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
-        pw.SizedBox(height: 10),
-        ...transactions.map((entry) {
-          final String date = entry['date'] ?? 'N/A';
-          final String paid = (entry['paidAmount'] ?? 0) != 0 ? 'Paid: ${entry['paidAmount']}' : '';
-          final String due = (entry['previousDue'] ?? 0) != 0 ? 'Due: ${entry['previousDue']}' : '';
-          final String description = entry['description'] ?? '';
-          return pw.Container(
-            margin: const pw.EdgeInsets.only(bottom: 8),
-            child: pw.Text(
-              'Date: $date | $paid $due | $description',
-              style: pw.TextStyle(fontSize: 14),
-            ),
-          );
-        }).toList(),
-      ],
-    ),
-  );
-
-  await Printing.layoutPdf(
-    onLayout: (PdfPageFormat format) async => pdf.save(),
-  );
-}
-
-
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+    );
+  }
 
   Future<void> deleteCustomerAndRelatedEntries() async {
     try {
@@ -196,13 +225,7 @@ Future<void> generatePdfReport({
                   children: [
                     IconButton(
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return BottomNaviationBar();
-                            },
-                          ),
-                        );
+                        Navigator.of(context).pop();
                       },
                       icon: Image.asset(
                         'assets/icons/Success Icon.png',
@@ -602,17 +625,23 @@ Future<void> generatePdfReport({
                                 icon: Image.asset('assets/icons/download.png'),
                                 label: const Text('Report'),
                                 onPressed: () async {
-                                  await generatePdfReport(
-        context: context,
-        userName: showOwnerdata[0].name ?? '',
-        userPhone: showOwnerdata[0].phone ?? '',
-        transactions: sortSelectedCustomerData.map((entry) => {
-          'date': entry.date,
-          'paidAmount': entry.paidAmount,
-          'previousDue': entry.previousDue,
-          'description': entry.phone,
-        }).toList(),
-      );
+                                  // await generatePdfReport(
+                                  //   context: context,
+                                  //   userName: showOwnerdata[0].name ?? '',
+                                  //   userPhone: showOwnerdata[0].phone ?? '',
+                                  //   transactions:
+                                  //       sortSelectedCustomerData
+                                  //           .map(
+                                  //             (entry) => {
+                                  //               'date': entry.date,
+                                  //               'paidAmount': entry.paidAmount,
+                                  //               'previousDue':
+                                  //                   entry.previousDue,
+                                  //               'description': entry.phone,
+                                  //             },
+                                  //           )
+                                  //           .toList(),
+                                  // );
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xffBBD3E8),
@@ -688,7 +717,11 @@ Future<void> generatePdfReport({
     };
 
     try {
-      await FirebaseFirestore.instance.collection('entries1').add(data);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('entries1')
+          .add(data);
 
       showShackBarMessenger(context, "Entry added successfully", true);
       Navigator.of(context).pop();
