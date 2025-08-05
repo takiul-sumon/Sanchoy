@@ -21,8 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   final LoginController _loginController = Get.find<LoginController>();
-  // List<bool> _isSelected = [true, false]; // [Sign In, Sign Up]
-
+  bool _obsecuretext = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,11 +135,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 12.h),
 
                   TextFormField(
-                    obscureText: true,
+                    obscureText: _obsecuretext,
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
                         icon: Image.asset('assets/icons/view.png'),
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            _obsecuretext = !_obsecuretext;
+                          });
+                        },
                       ),
                       hintText: 'Password',
                       prefixIcon: Image.asset('assets/icons/lock.png'),
@@ -285,6 +288,7 @@ class _LoginScreenState extends State<LoginScreen> {
         (predicate) => false,
       );
     } else {
+      // ignore: use_build_context_synchronously
       showShackBarMessenger(context, _loginController.errorMessage!, true);
     }
   }

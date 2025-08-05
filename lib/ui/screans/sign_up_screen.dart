@@ -24,6 +24,7 @@ class _SignUpScreanState extends State<SignUpScrean> {
       TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   bool _regristrationInProgress = false;
+  bool _obscureText = false;
 
   @override
   Widget build(BuildContext context) {
@@ -179,13 +180,24 @@ class _SignUpScreanState extends State<SignUpScrean> {
                   TextFormField(
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
-                        icon: Image.asset('assets/icons/view.png'),
-                        onPressed: () {},
+                        icon:
+                            _obscureText
+                                ? Image.asset('assets/icons/view.png')
+                                : Icon(Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
                       ),
                       hintText: 'Password',
-                      prefixIcon: Image.asset('assets/icons/lock.png'),
+                      prefixIcon: IconButton(
+                        onPressed: () {},
+                        icon: Image.asset('assets/icons/lock.png'),
+                      ),
                     ),
                     controller: _passwordController,
+                    obscureText: _obscureText,
                     validator: (String? value) {
                       if (value?.isEmpty == true || value!.length < 6) {
                         return "Enter a Valid Password";
