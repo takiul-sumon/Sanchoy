@@ -220,7 +220,7 @@ class _SignUpScreanState extends State<SignUpScrean> {
                   const SizedBox(height: 10),
                   Visibility(
                     visible: _regristrationInProgress == false,
-                    replacement: CircularProgressIndicator(),
+                    replacement: Center(child: CircularProgressIndicator()),
                     child: ElevatedButton(
                       onPressed: onTapSubmitButton,
                       child: Text(
