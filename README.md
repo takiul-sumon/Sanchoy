@@ -1,6 +1,6 @@
 <!-- Banner Section -->
 <p align="center">
-  <img src="assets/banner.png" alt="Sanchoy Banner" width="100%" />
+  <img src="sanchoy1.png" alt="Sanchoy Banner" width="100%" />
 </p>
 
 <h1 align="center">🚀 Sanchoy – Smart Digital Ledger App 📱</h1>
